@@ -1,0 +1,8 @@
+{
+  "name": "lebanon-geo-dashboard-functions",
+  "version": "1.0.0",
+  "description": "Backend functions for the dashboard",
+  "dependencies": {
+    "@google/generative-ai": "^0.15.0"
+  }
+}
