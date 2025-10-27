@@ -123,6 +123,20 @@
 </div>
                 </h4>
                 <p id="ai-insight-text">Click a district to generate analysis...</p>
+		<div id="ai-chat-wrapper">
+    <label for="ai-chat-input">Ask a follow-up question:</label>
+    <textarea id="ai-chat-input" rows="2" placeholder="e.g., What are the biggest challenges here?"></textarea>
+    <div id="ai-suggested-questions">
+    <button class="suggested-q-btn" data-question="¿Cuál es el principal desafío demográfico aquí?">¿Principal desafío?</button>
+    <button class="suggested-q-btn" data-question="¿Cómo está creciendo esta población (jóvenes vs ancianos)?">¿Crecimiento?</button>
+    <button class="suggested-q-btn" data-question="¿Cómo se compara este distrito con el promedio nacional?">¿Comparativa nacional?</button>
+</div>
+    <button id="ai-chat-submit">
+        <span class="button-text">Ask AI</span>
+        <span class="button-spinner" style="display: none;"></span>
+    </button>
+    <div id="ai-chat-response"></div>
+</div>
             </div>
         </div>
 
