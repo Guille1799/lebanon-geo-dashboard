@@ -42,8 +42,16 @@ exports.handler = async (event, context) => {
             body: JSON.stringify({ message: text }),
         };
 
-    } catch (error) {
-        console.error("Error al llamar a la API de Gemini:", error);
-        return { statusCode: 500, body: `Error interno del servidor: ${error.message}` };
-    }
+    } 
+catch (error) {
+    console.error("Error al llamar a la API de Gemini:", error);
+    // Devolvemos un JSON válido para que el frontend pueda leerlo
+    return {
+        statusCode: 500,
+        body: JSON.stringify({ 
+            error: `Error interno del servidor: ${error.message}` 
+        }),
+    };
+}
+
 };
