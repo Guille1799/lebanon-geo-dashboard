@@ -684,7 +684,7 @@ FORMATO DE RESPUESTA:
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.body || `Error del servidor: ${response.status}`);
+            throw new Error(errorData.error || `Error del servidor: ${response.status}`);
         }
 
         // 4. Obtener la respuesta de la IA desde el proxy
@@ -707,6 +707,7 @@ FORMATO DE RESPUESTA:
 });
 
 });
+
 
 
 /* === END OF APP.JS CODE === */
