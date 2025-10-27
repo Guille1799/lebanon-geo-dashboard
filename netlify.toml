@@ -1,0 +1,14 @@
+# Este es el archivo: netlify.toml
+
+[build]
+  # Directorio donde están tus archivos estáticos (index.html, etc.)
+  publish = "/" 
+  
+  # Directorio donde Netlify buscará tus funciones serverless
+  functions = "netlify/functions/"
+
+[[redirects]]
+  # Esto hace que la API de Google se instale
+  from = "/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
