@@ -38,7 +38,7 @@ exports.handler = async (event, context) => {
     try {
         // 5. Inicializar el cliente de Google AI y llamar
         const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
         
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -55,3 +55,4 @@ exports.handler = async (event, context) => {
         return createErrorResponse(500, `Error interno del servidor al contactar la IA: ${error.message}`);
     }
 };
+
