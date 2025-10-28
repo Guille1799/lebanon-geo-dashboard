@@ -1,593 +1,985 @@
 /* Configuración básica */
+
 body, html {
+
     margin: 0; padding: 0; width: 100%; height: 100%;
+
     font-family: Arial, sans-serif; overflow: hidden;
+
 }
+
 .container { display: flex; width: 100%; height: 100%; }
 
+
+
 /* Sidebar */
+
 .sidebar {
+
     width: 600px; min-width: 400px; height: 100vh;
+
     background: #f4f4f4; padding: 20px;
+
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+
     overflow-y: auto; z-index: 1000; box-sizing: border-box;
+
 }
 
-/* Info Distrito (PANEL 1) */
+
+
+/* Info Distrito */
+
 #district-info {
+
     padding: 10px; background: #ffffff; border-radius: 5px; margin-bottom: 20px;
+
     text-align: center; border: 1px solid #ddd; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
 }
+
 #district-info h3 { margin: 0 0 5px 0; color: #333; }
 
 
+
+
+
 /* Esta regla ahora SOLO se aplica al <p> del sub-distrito */
+
 #district-parent { 
+
     margin: 0; 
+
     font-size: 0.9em; 
+
     color: #777; 
+
 }
+
+
 
 /* Botón Deseleccionar */
+
 #deselect-btn {
+
     display: none; width: 100%; padding: 8px; margin-top: 15px;
+
     background-color: #555; color: white; border: none; border-radius: 4px;
+
     cursor: pointer; font-size: 0.9em;
+
 }
+
 #deselect-btn:hover { background-color: #333; }
 
-/* Grupo Filtros */
+
+
+/* Grupo Filtros y Gráficos */
+
 .filter-group { margin-bottom: 20px; }
 
+.chart-container { margin-top: 20px; }
 
-/* ===== ESTILOS PANELES REORDENADOS (v4.5) ===== */
 
-/* PANEL 2: AI ANALYSIS */
-#ai-analysis-panel {
-    background: #ffffff;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    margin-top: 25px;
-    padding: 15px;
-}
-#ai-analysis-panel > h3 {
-    margin-top: 0;
-    text-align: center;
-    color: #6a1b9a;
-}
+
+/* Estilo "AI Policy Insight" */
+
 #ai-insight-box {
-    margin-top: 0;
-    padding: 0;
-    border: none;
-    box-shadow: none;
-}
-#ai-insight-box h4 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: #6a1b9a; /* Color púrpura "AI" */
-    display: flex; /* Para alinear el icono */
-    align-items: center;
-    gap: 8px; /* Espacio entre icono y texto */
-    justify-content: center; /* Centra el título y el icono */
-}
-#ai-insight-box h4 svg {
-    flex-shrink: 0; /* Evita que el icono se encoja */
-}
-#ai-insight-text {
-    font-style: normal; /* Texto normal */
-    color: #333; /* Texto más oscuro */
-    padding-top: 10px;
-    border-top: 1px solid #eee; /* Separador limpio */
-    margin-top: 10px;
-    margin-bottom: 0; /* Reseteo */
-}
 
-
-/* PANEL 3: KEY METRICS */
-#key-metrics-panel {
     margin-top: 25px;
+
     padding: 15px;
-    background: #ffffff;
+
+    background: #ffffff; /* Fondo blanco */
+
     border-radius: 8px;
-    border: 1px solid #ddd;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    text-align: center;
+
+    border: 1px solid #ddd; /* Borde estándar */
+
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Sombra sutil */
+
 }
-#key-metrics-panel > h3 {
+
+#ai-insight-box h4 {
+
     margin-top: 0;
-    margin-bottom: 15px;
-    color: #333;
-}
-/* Mover Tasa de Dependencia */
-#dependency-ratio-wrapper { 
-    margin-top: 0; 
-    padding-top: 0; 
-    border-top: none; 
-}
-#dependency-ratio-wrapper h3 { margin: 0; font-size: 2em; transition: color 0.3s; }
-#dependency-ratio-wrapper > .label-with-tooltip > p { margin: 0 8px 0 0; font-size: 0.9em; color: #666; text-transform: uppercase; }
 
+    margin-bottom: 10px;
 
-/* PANEL 4: DATA VISUALS */
-#data-visuals-panel {
-    margin-top: 25px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Espacio entre gráficos */
-}
-.chart-container { 
-    background: #fff; 
-    border: 1px solid #ddd; 
-    border-radius: 8px; 
-    overflow: hidden; /* Clave para la animación */
-}
+    color: #6a1b9a; /* Color púrpura "AI" */
 
-/* --- ESTILOS PANELES PLEGABLES (v4.5) --- */
-.chart-header {
-    display: flex;
-    justify-content: space-between;
+    display: flex; /* Para alinear el icono */
+
     align-items: center;
-    cursor: pointer;
-    padding: 12px 15px;
-    background: #f9f9f9;
-    border-bottom: 1px solid #eee;
-}
-.chart-header:hover {
-    background: #f1f1f1;
-}
-.chart-header h3 {
-    margin: 0;
-    font-size: 1.1em;
-    color: #444;
-}
-.toggle-icon {
-    width: 18px;
-    height: 18px;
-    transition: transform 0.3s ease;
-    color: #555;
-    transform: rotate(0deg); /* Estado por defecto: abierto */
-}
-.chart-content {
-    /* Animación de altura */
-    max-height: 1000px; /* Un valor alto para el estado abierto */
-    overflow: hidden;
-    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
-    padding: 15px;
-    box-sizing: border-box;
-}
-/* Estado colapsado */
-.collapsible.collapsed .chart-content {
-    max-height: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    border-bottom: none;
-}
-.collapsible.collapsed .chart-header {
-    border-bottom: 1px solid #ddd; /* Borde visible cuando está plegado */
-}
-.collapsible.collapsed .toggle-icon {
-    transform: rotate(-90deg); /* Gira la flecha */
-}
-/* Hacemos que la pirámide empiece colapsada por defecto */
-.collapsible.collapsed-default {
-    max-height: 46px; /* Altura del header */
-}
-.collapsible.collapsed-default .chart-content {
-    max-height: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-}
-.collapsible.collapsed-default .toggle-icon {
-    transform: rotate(-90deg);
+
+    gap: 8px; /* Espacio entre icono y texto */
+
+    justify-content: center; /* Centra el título y el icono */
+
 }
 
-/* PANEL 5: AI FILTERS */
-#ai-filter-box { 
-    margin-top: 25px; 
-    padding: 15px; 
-    background: #fff; 
-    border-radius: 8px; 
-    border: 1px solid #ddd; 
-}
-#ai-filter-box h4 { margin-top: 0; }
-#ai-filter-box > p { 
-    font-size: 0.9em; 
-    color: #777; 
-    margin: -5px 0 10px 0; 
+#ai-insight-box h4 svg {
+
+    flex-shrink: 0; /* Evita que el icono se encoja */
+
 }
 
+#ai-insight-text {
 
-/* ===== FIN ESTILOS PANELES ===== */
+    font-style: normal; /* Texto normal */
+
+    color: #333; /* Texto más oscuro */
+
+    padding-top: 10px;
+
+    border-top: 1px solid #eee; /* Separador limpio */
+
+    margin-top: 10px;
+
+    margin-bottom: 0; /* Reseteo */
+
+}
+
 
 
 /* Mapa */
+
 #map { flex: 1; height: 100vh; background: #e0e0e0; }
+
 .leaflet-interactive { cursor: pointer; }
 
+
+
 /* Leyenda Mapa */
+
 .info.legend {
+
     padding: 8px; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2);
+
     border-radius: 5px; line-height: 1.5; color: #555;
+
 }
+
 .info.legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }
+
 .info.legend small { display: block; color: #777; margin-top: 5px;}
 
 
+
+
+
 /* --- BUSCADOR PERSONALIZADO CON 'X' --- */
+
 #search-wrapper { position: relative; width: 100%; }
+
 #district-search {
+
     width: 100%; padding: 10px 30px 10px 10px; /* Espacio para 'x' */
+
     font-size: 1.1em; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
+
 }
+
 #search-clear-btn {
+
     position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+
     font-size: 1.5em; line-height: 1; color: #aaa; cursor: pointer; display: none;
+
 }
+
 #search-clear-btn:hover { color: #333; }
 
+
+
 /* Autocompletar */
+
 #autocomplete-results {
+
     display: none; position: absolute; top: 100%; left: 0; right: 0;
+
     background-color: #fff; border: 1px solid #ddd; border-top: none;
+
     border-radius: 0 0 4px 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+
     max-height: 250px; overflow-y: auto; z-index: 2000;
+
 }
+
 .autocomplete-item { padding: 10px; cursor: pointer; text-align: left; }
+
 .autocomplete-item:hover { background-color: #f4f4f4; }
+
 .autocomplete-item strong { color: #6a1b9a; }
+
 /* --- FIN BUSCADOR --- */
 
 
+
+
+
 /* Asa Redimensionar */
+
 .sidebar-resizer {
+
     width: 5px; height: 100vh; background: #ddd; cursor: ew-resize;
+
     transition: background 0.2s; z-index: 999;
+
 }
+
 .sidebar-resizer:hover { background: #6a1b9a; }
+
+
+
+/* Tasa Dependencia */
+
+#dependency-ratio-wrapper { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; }
+
+#dependency-ratio-wrapper h3 { margin: 0; font-size: 2em; transition: color 0.3s; }
+
+#dependency-ratio-wrapper > .label-with-tooltip > p { margin: 0 8px 0 0; font-size: 0.9em; color: #666; text-transform: uppercase; }
+
+
+
 
 
 /* --- INICIO: SECCIÓN DE TOOLTIPS UNIFICADA (LIMPIA) --- */
 
+
+
 /* Contenedor principal para el icono y el texto (para alinear) */
+
 .label-with-tooltip { 
+
     display: flex; 
+
     justify-content: center; 
+
     align-items: center; 
+
     margin-bottom: 5px; 
+
     gap: 8px;
+
 }
-/* Modificador para h3 y h4 */
-.h-with-tooltip {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px; /* Espacio entre el texto y el icono */
-    margin-bottom: 5px; /* Ajusta el margen que tenías en h4 */
-}
+
 
 
 /* El 'trigger' del tooltip (el icono de información) */
+
 .info-tooltip {
+
     position: relative;
+
     display: flex;
+
     align-items: center;
+
     cursor: default; 
+
 }
+
+
 
 /* Estilo del icono SVG */
+
 .info-tooltip svg {
+
     width: 18px;
+
     height: 18px;
+
     color: #007bff; 
+
     transition: all 0.2s ease-in-out;
+
 }
+
 .info-tooltip:hover svg {
+
     color: #0056b3; 
+
     transform: scale(1.1);
+
 }
+
+
 
 /* La caja de texto del tooltip (oculta por defecto) */
+
 .info-tooltip .tooltip-text {
+
     visibility: hidden;
+
     opacity: 0;
+
     position: absolute;
+
     width: 280px;
+
     background-color: #ffffff;
+
     color: #333; /* Color de texto base */
+
     text-align: left;
+
     border-radius: 10px;
+
     padding: 16px; 
+
     
+
     /* Fuente y tamaño base aplicados al contenedor */
+
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
     font-size: 0.95rem; /* 15.2px */
+
     
+
     box-shadow: 0 4px 6px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.1);
+
     border: 1px solid #e0e0e0;
+
     z-index: 3000;
+
     transition: opacity 0.3s ease, transform 0.3s ease;
+
     
+
     /* Posición por defecto: a la izquierda y centrada */
+
     top: 50%;
+
     right: 105%;
+
     transform: translateY(-50%) scale(0.95);
+
 }
+
+
 
 /* --- INICIO: LA SOLUCIÓN DEL NODO FANTASMA --- */
+
+
+
+/* 1. MATA la altura de línea de los nodos de texto fantasma */
+
 .info-tooltip .tooltip-text {
+
     /* ... (todos los estilos que ya tiene) ... */
+
     line-height: 0; /* ¡AQUÍ ESTÁ LA MAGIA! */
+
 }
+
+
+
 /* 2. DEVUELVE la altura de línea a los elementos HTML REALES */
+
 .info-tooltip .tooltip-text > * {
+
     line-height: 1.5; /* El valor original que queríamos */
+
 }
-/* Hack para listas <ul> */
-.info-tooltip .tooltip-text ul {
-    line-height: 1.5;
-    padding-left: 20px;
-    margin-bottom: 0;
-}
-.info-tooltip .tooltip-text li {
-    margin-bottom: 5px;
-}
+
+
+
 /* --- FIN: LA SOLUCIÓN DEL NODO FANTASMA --- */
 
+
+
 /* Mostrar al hacer hover */
+
 .info-tooltip:hover .tooltip-text {
+
     visibility: visible;
+
     opacity: 1;
+
     transform: translateY(-50%) scale(1);
+
 }
 
+
+
 /* --- ESTILOS DE CONTENIDO INTERNO (AHORA FUNCIONARÁN) --- */
+
+
+
+/* Título (strong) principal */
+
 .info-tooltip .tooltip-text > strong {
+
     font-size: 1.1em; /* 110% del tamaño base */
+
     color: #6a1b9a;
+
     margin-bottom: 12px; /* Espacio después del título */
+
     display: block;
+
     font-weight: 600;
+
 }
+
+
+
+/* Párrafos (p) dentro del tooltip */
+
 .info-tooltip .tooltip-text p {
+
+    /* Hereda font-size y color del padre (.tooltip-text) */
+
     font-weight: normal; 
+
     text-transform: none; 
+
     margin-top: 0;
+
     margin-bottom: 12px; /* Espacio estándar entre párrafos */
+
 }
+
+
+
+/* Negrita (strong) DENTRO de un párrafo */
+
 .info-tooltip .tooltip-text p strong,
+
 .info-tooltip .tooltip-text p b {
+
     color: #000; 
+
     font-weight: bold;
+
     display: inline;
+
 }
+
+
+
+/* Separador HR */
+
 .info-tooltip .tooltip-text hr {
+
     border: 0; 
+
     border-top: 1px solid #eee; 
+
+    
+
+    /* Solución al margen doble: */
+
     margin-top: 0; /* El párrafo de arriba ya tiene 12px */
+
     margin-bottom: 12px; /* Espacio antes del siguiente párrafo */
+
 }
+
+
+
+/* El último elemento (párrafo O hr) no tiene margen inferior */
+
 .info-tooltip .tooltip-text p:last-child,
+
 .info-tooltip .tooltip-text hr:last-child {
+
     margin-bottom: 0;
+
 }
+
+
+
 /* --- FIN DE ESTILOS DE CONTENIDO --- */
 
 
+
+
+
 /* --- MODIFICADOR DE POSICIÓN TOOLTIP (REVISADO) --- */
+
+
+
+/* Clase 'tooltip-top' para forzar la apertura hacia arriba (para AI Policy Insight) */
+
 .info-tooltip .tooltip-text.tooltip-top {
+
+    /* Sobrescribe la posición vertical y lateral */
+
     top: auto;
+
     bottom: 100%; /* 1. Alinea la base del tooltip con la cima del icono */
+
     margin-bottom: 8px; /* 2. Añade un espacio */
+
+    
+
     right: 50%;
+
     left: auto;
+
+    
+
+    /* Centra horizontalmente y resetea la transformación Y */
+
     transform: translateX(50%) scale(0.95);
+
 }
+
+
+
+/* Ajuste del hover para la nueva transformación */
+
 .info-tooltip:hover .tooltip-text.tooltip-top {
+
     transform: translateX(50%) scale(1);
+
 }
+
+
+
 /* --- FIN: MODIFICADOR DE POSICIÓN TOOLTIP --- */
 
+
+
 /* Leyenda Ratio */
+
 .dependency-ratio-legend { display: flex; justify-content: center; gap: 15px; margin-top: 10px; font-size: 0.8em; color: #666; }
+
 .dependency-ratio-legend div { display: flex; align-items: center; }
+
 .dependency-ratio-legend .color-box { width: 12px; height: 12px; margin-right: 5px; border-radius: 2px; }
+
 .color-box.ratio-low { background-color: #28a745; } /* Verde */
+
 .color-box.ratio-medium { background-color: #ffc107; } /* Naranja */
+
 .color-box.ratio-high { background-color: #dc3545; } /* Rojo */
 
+
+
 /* Botones Año */
+
 #year-button-group { display: flex; justify-content: space-between; margin-top: 10px; }
+
 .year-btn {
+
     flex: 1; padding: 10px 5px; font-size: 1em; font-weight: bold;
+
     background-color: #ddd; color: #333; border: none; border-radius: 4px;
+
     cursor: pointer; transition: background-color 0.2s, color 0.2s; margin: 0 3px;
+
 }
+
 .year-btn:first-child { margin-left: 0; }
+
 .year-btn:last-child { margin-right: 0; }
+
 .year-btn:hover { background-color: #ccc; }
+
 .year-btn.active { background-color: #6a1b9a; color: white; }
 
+
+
 /* Botones Filtro IA */
-#ai-filter-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.ai-filter-btn {
-    padding: 10px; font-size: 0.9em; font-weight: bold; background-color: #eee;
-    color: #555; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; transition: all 0.2s;
+
+#ai-filter-box { margin-top: 25px; padding: 15px; background: #fff; border-radius: 8px; border: 1px solid #ddd; }
+
+#ai-filter-box h4 { margin-top: 0; }
+
+
+
+
+
+/* Esta regla ahora SOLO se aplica al <p> de descripción */
+
+#ai-filter-box > p { 
+
+    font-size: 0.9em; 
+
+    color: #777; 
+
+    margin: -5px 0 10px 0; 
+
 }
+
+
+
+#ai-filter-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.ai-filter-btn {
+
+    padding: 10px; font-size: 0.9em; font-weight: bold; background-color: #eee;
+
+    color: #555; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; transition: all 0.2s;
+
+}
+
 .ai-filter-btn:hover { background-color: #ddd; border-color: #ccc; }
+
 .ai-filter-btn.clear { background-color: #f8f8f8; color: #777; }
+
 .ai-filter-btn.active { background-color: #6a1b9a; color: white; border-color: #6a1b9a; }
+
+
+
 
 
 /* === ESTILOS PARA FILTROS AI (MODIFICADOS) === */
 
+
+
+/* Alinea el título y el icono de info */
+
+.h4-with-tooltip {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 8px; /* Espacio entre el texto y el icono */
+
+    margin-bottom: 5px; /* Ajusta el margen que tenías en h4 */
+
+}
+
+
+
+
+
 /* 1. Estilo para el contenedor del botón + tooltip */
+
 .ai-filter-btn-wrapper {
+
     position: relative; /* Contenedor para el tooltip absoluto */
+
     display: flex; /* Asegura que el botón se expanda */
+
     z-index: 1; /* z-index base para el solapamiento */
+
 }
+
+
+
+/* Eleva el wrapper entero al pasar el ratón para que el tooltip
+
+   se muestre por encima de los botones hermanos */
+
 .ai-filter-btn-wrapper:hover {
+
     z-index: 10;
+
 }
+
+
+
 /* 2. Haz que el botón principal crezca */
+
 .ai-filter-btn-wrapper .ai-filter-btn {
+
     flex-grow: 1; /* El botón ocupa todo el espacio */
+
     padding-right: 30px;
+
     text-align: center;
+
 }
+
+
+
 /* 3. Posiciona el icono del tooltip */
+
 .ai-filter-btn-wrapper .info-tooltip {
+
     position: absolute;
+
     top: 50%;
+
     right: 10px; /* 10px desde el borde derecho */
+
     transform: translateY(-50%); /* Centrado vertical */
+
 }
+
+
+
 /* 4. Centra tooltips para botones de COLUMNA DERECHA */
+
+/* (El primer botón es el 'clear-wrapper', por eso empezamos en 3) */
+
 .ai-filter-btn-wrapper:nth-child(3) .tooltip-text,
+
 .ai-filter-btn-wrapper:nth-child(5) .tooltip-text {
+
     top: 50%; /* Centra verticalmente */
+
     transform: translateY(-50%); /* Centra verticalmente */
+
     right: 105%; /* Mantiene la dirección a la izquierda */
+
 }
+
+
+
 /* 5. Centra tooltips para botones de COLUMNA IZQUIERDA */
+
 .ai-filter-btn-wrapper:nth-child(even) .tooltip-text {
+
     right: auto;
+
     left: 105%;
+
     margin-right: 0;
+
     top: 50%; /* Centra verticalmente */
+
     transform: translateY(-50%); /* Centra verticalmente */
+
 }
+
+
+
+
+
 /* 6. Haz que el botón "Clear" ocupe las dos columnas */
+
 .ai-filter-btn-wrapper.clear-wrapper {
+
     grid-column: 1 / -1; /* Ocupa todo el ancho del grid */
+
 }
+
+
 
 /* --- ESTILOS PARA EL CHATBOT DE IA --- */
+
 #ai-chat-wrapper {
+
     margin-top: 15px;
+
     padding-top: 15px;
+
     border-top: 1px solid #eee;
+
 }
 
-/* Cabecera del Chat (v4.5) */
-#ai-chat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-#ai-chat-header label {
+
+
+#ai-chat-wrapper label {
+
+    display: block;
+
     font-size: 0.9em;
+
     font-weight: bold;
+
     color: #666;
-    margin-bottom: 0; /* El wrapper maneja el margen */
+
+    margin-bottom: 8px;
+
     text-align: left;
+
 }
-/* El tooltip de modo debe ser un poco más pequeño */
-#ai-chat-mode-tooltip svg {
-    width: 16px;
-    height: 16px;
-    color: #666;
-}
-#ai-chat-mode-tooltip:hover svg {
-    color: #333;
-}
+
 
 
 #ai-chat-input {
+
     width: 100%;
+
     box-sizing: border-box; /* Para que el padding no rompa el ancho */
+
     padding: 10px;
+
     border: 1px solid #ccc;
+
     border-radius: 4px;
+
     font-family: Arial, sans-serif;
+
     font-size: 0.95rem;
+
     line-height: 1.4;
+
     resize: vertical; /* Permite redimensionar verticalmente */
+
     margin-bottom: 10px;
+
 }
 
-/* Espaciado de botones sugeridos (v4.5) */
-#ai-suggested-questions {
-    margin-top: 0; /* El input ya tiene margen */
-    margin-bottom: 12px; /* <-- EL ARREGLO */
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-.suggested-q-btn {
-    padding: 6px 10px;
-    font-size: 0.85em;
-    font-weight: bold;
-    background-color: #f0e6f6; /* Púrpura muy pálido */
-    color: #6a1b9a;            /* Púrpura "AI" */
-    border: 1px solid #d1b3e6;
-    border-radius: 20px;       /* Píldoras */
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.suggested-q-btn:hover {
-    background-color: #e0c2f0;
-    border-color: #6a1b9a;
-}
 
 
 #ai-chat-submit {
+
     width: 100%;
+
     padding: 10px;
+
     font-size: 1em;
+
     font-weight: bold;
+
     background-color: #6a1b9a; /* Púrpura "AI" */
+
     color: white;
+
     border: none;
+
     border-radius: 4px;
+
     cursor: pointer;
+
     transition: background-color 0.2s;
+
     display: flex;
+
     justify-content: center;
+
     align-items: center;
+
     height: 40px; /* Altura fija */
+
 }
+
+
 
 #ai-chat-submit:hover {
+
     background-color: #4a148c;
+
 }
+
+
 
 #ai-chat-submit:disabled {
+
     background-color: #ccc;
+
     cursor: not-allowed;
+
 }
+
+
 
 #ai-chat-response {
+
     margin-top: 15px;
+
     padding: 12px;
+
     background: #fdfdfd;
+
     border: 1px solid #e0e0e0;
+
     border-radius: 4px;
+
     font-size: 0.95rem;
+
     line-height: 1.5;
+
     color: #333;
+
     display: none; /* Oculto por defecto */
+
 }
+
+
 
 /* --- ESTILO DEL SPINNER DE CARGA --- */
+
 .button-spinner {
+
     width: 18px;
+
     height: 18px;
+
     border: 3px solid rgba(255, 255, 255, 0.3);
+
     border-radius: 50%;
+
     border-top-color: #fff;
+
     animation: spin 1s ease-in-out infinite;
+
 }
+
+
 
 @keyframes spin {
+
     to { transform: rotate(360deg); }
+
 }
 
-/* --- ESTILO DE ERROR (v4.0) --- */
+/* --- ESTILOS DE ROBUSTEZ (v4.0) --- */
+
+
+
+/* 1. Estilo para la respuesta de error */
+
 #ai-chat-response.error {
+
     background-color: #fff5f5; /* Rojo pálido */
+
     border-color: #e53e3e;     /* Borde rojo */
+
     color: #c53030;            /* Texto rojo oscuro */
+
+}
+
+
+
+/* 2. Contenedor para las preguntas sugeridas */
+
+#ai-suggested-questions {
+
+    margin-top: 10px;
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+}
+
+
+
+/* 3. Estilo de los botones de sugerencia */
+
+.suggested-q-btn {
+
+    padding: 6px 10px;
+
+    font-size: 0.85em;
+
+    font-weight: bold;
+
+    background-color: #f0e6f6; /* Púrpura muy pálido */
+
+    color: #6a1b9a;            /* Púrpura "AI" */
+
+    border: 1px solid #d1b3e6;
+
+    border-radius: 20px;       /* Píldoras */
+
+    cursor: pointer;
+
+    transition: all 0.2s;
+
+}
+
+
+
+.suggested-q-btn:hover {
+
+    background-color: #e0c2f0;
+
+    border-color: #6a1b9a;
+
 }
