@@ -238,12 +238,15 @@ const suggestedQuestionsWrapper = document.getElementById('ai-suggested-question
             if (working > 0) { ratio = ((youth + elderly) / working) * 100; depRatioEl.innerText = `${ratio.toFixed(1)}%`; } 
             else { depRatioEl.innerText = "N/A"; ratio = -1; }
         } catch (e) { console.error("Error calculating dependency ratio:", e, props); depRatioEl.innerText = "Error"; ratio = -1; }
-        depRatioEl.style.color = getDependencyRatioColor(ratio);
+depRatioEl.style.color = getDependencyRatioColor(ratio);
 
-        deselectBtn.style.display = selectedDistrictProps ? 'block' : 'none';
-aiChatWrapper.style.display = selectedDistrictProps ? 'block' : 'none';
-suggestedQuestionsWrapper.style.display = selectedDistrictProps ? 'block' : 'none';
-    }
+// Obtenemos la nueva referencia al <span> del año
+const metricsYearEl = document.getElementById('metrics-year');
+if (metricsYearEl) {
+    metricsYearEl.innerText = currentYear;
+}
+deselectBtn.style.display = selectedDistrictProps ? 'block' : 'none';
+}
     
     // --- Gráficos (Pyramid y TimeSeries - Sin cambios relevantes) ---
     function updatePyramidChart(props, year) { 
@@ -711,3 +714,4 @@ FORMATO DE RESPUESTA:
 
 
 /* === END OF APP.JS CODE === */
+
