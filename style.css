@@ -192,15 +192,6 @@ body, html {
     line-height: 1.5; /* El valor original que queríamos */
 }
 
-/* --- FIN: LA SOLUCIÓN DEL NODO FANTASMA --- */
-
-/* Mostrar al hacer hover */
-.info-tooltip:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
-    transform: translateY(-50%) scale(1);
-}
-
 /* --- ESTILOS DE CONTENIDO INTERNO (AHORA FUNCIONARÁN) --- */
 
 /* Título (strong) principal */
@@ -269,7 +260,25 @@ body, html {
     transform: translateX(50%) scale(1);
 }
 
-/* --- FIN: MODIFICADOR DE POSICIÓN TOOLTIP --- */
+/* (Pega esto en style.css, justo después del bloque .tooltip-top) */
+
+/* --- MODIFICADOR DE POSICIÓN TOOLTIP (HACIA ABAJO) --- */
+.info-tooltip .tooltip-text.tooltip-bottom {
+    top: 100%; /* 1. Se alinea CON LA PARTE SUPERIOR del icono */
+    bottom: auto; /* Resetea el 'bottom' */
+    margin-top: 8px; /* 2. Añade un espacio */
+    
+    right: 50%;
+    left: auto;
+    
+    /* Centra horizontalmente y resetea la transformación Y */
+    transform: translateX(50%) scale(0.95);
+}
+
+/* Ajuste del hover para la nueva transformación */
+.info-tooltip:hover .tooltip-text.tooltip-bottom {
+    transform: translateX(50%) scale(1);
+}
 
 /* Leyenda Ratio */
 .dependency-ratio-legend { display: flex; justify-content: center; gap: 15px; margin-top: 10px; font-size: 0.8em; color: #666; }
@@ -301,6 +310,7 @@ body, html {
     font-size: 0.9em; 
     color: #777; 
     margin: -5px 0 10px 0; 
+text-align: center;
 }
 
 #ai-filter-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -315,13 +325,49 @@ body, html {
 
 /* === ESTILOS PARA FILTROS AI (MODIFICADOS) === */
 
-/* Alinea el título y el icono de info */
-.h4-with-tooltip {
+/* Regla general para los wrappers que contienen H4 + Icono */
+.ai-filter-header, 
+.ai-chat-title-wrapper, 
+#ai-insight-box > .h4-with-tooltip /* <-- Sé más específico aquí */ {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px; /* Espacio entre el texto y el icono */
-    margin-bottom: 5px; /* Ajusta el margen que tenías en h4 */
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+/* Los H4 dentro de estos wrappers NO necesitan ser flex */
+.ai-filter-header h4,
+.ai-chat-title-wrapper h4,
+#ai-insight-box h4 {
+    margin: 0; /* Asegura que no haya márgenes extraños */
+    /* Quitamos el display: flex de aquí */
+}
+
+/* Color específico para Ask AI que pediste */
+.ai-chat-title-wrapper h4 {
+    color: #6a1b9a; 
+}
+
+/* Color específico para AI Policy Insight */
+#ai-insight-box h4 {
+     color: #6a1b9a; /* Ya estaba, pero lo ponemos aquí por claridad */
+     margin-bottom: 10px; /* Restauramos su margen inferior específico */
+}
+
+/* El título del Filtro (AI Trend Filter) no necesita color especial */
+.ai-filter-header h4 {
+    color: #6a1b9a;
+}
+
+.ai-filter-header {
+    display: flex;
+    flex-direction: row; /* <-- Asegura que h4 e icono estén en línea */
+    justify-content: center; /* <-- Centra el h4 y el icono */
+    align-items: center;
+    gap: 8px; /* Espacio entre título e icono */
+    position: relative; /* Para los tooltips */
+    z-index: 11; 
 }
 
 
@@ -472,6 +518,7 @@ body, html {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+margin-bottom: 12px;
 }
 
 /* 3. Estilo de los botones de sugerencia */
@@ -492,47 +539,116 @@ body, html {
     border-color: #6a1b9a;
 }
 
-/* ===== ESTILOS PANELES REORDENADOS (v4.5) ===== */
 
-/* PANEL 2: AI ANALYSIS */
-#ai-analysis-panel {
+/* ===== ESTILOS PANELES PLEGABLES (v4.5 - v3.0) ===== */
+
+/* 1. El Contenedor Principal (la caja blanca) */
+.collapsible-container {
     background: #ffffff;
     border-radius: 8px;
     border: 1px solid #ddd;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     margin-top: 25px;
+    overflow: hidden; /* ¡Clave para la animación! */
+}
+
+/* 2. La Cabecera Clicable */
+.collapsible-header {
+    display: flex;
+    justify-content: space-between; /* <-- Esto empuja el título a la izq y la flecha a la der */
+    align-items: center;
+    cursor: pointer;
+    padding: 12px 15px;
+    background: #f9f9f9;
+    border-bottom: 1px solid #eee;
+    transition: border-color 0.3s ease;
+}
+.collapsible-header:hover {
+    background: #f1f1f1;
+}
+.collapsible-header h3 {
+    margin: 0;
+    font-size: 1.1em;
+    color: #444;
+}
+
+/* 3. El Icono de Flecha (SVG) */
+.toggle-icon {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.3s ease;
+    color: #555;
+    transform: rotate(0deg); /* Estado por defecto: abierto */
+}
+
+/* 4. El Contenido (que se oculta) */
+.collapsible-content {
+    /* Animación de altura */
+    max-height: 2000px; /* Un valor alto para el estado abierto */
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+    
+    /* El padding que antes definimos en los paneles (AI, Metrics) */
     padding: 15px;
+    box-sizing: border-box;
 }
-/* Título principal del panel de IA */
-#ai-analysis-panel > h3 {
-    margin-top: 0;
-    text-align: center;
-    color: #6a1b9a;
+
+/* 5. EL ESTADO COLAPSADO */
+.collapsible-container.collapsed .collapsible-content {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-top: none;
 }
-/* Resetea el 'insight-box' que está AHORA DENTRO del panel de IA */
+.collapsible-container.collapsed .collapsible-header {
+     /* Mantiene el borde inferior cuando está cerrado */
+     border-bottom-color: #ddd;
+}
+.collapsible-container.collapsed .toggle-icon {
+    transform: rotate(-90deg); /* Gira la flecha */
+}
+#ai-analysis-panel > .collapsible-header {
+    justify-content: center; /* Centra el h3 y su icono */
+    position: relative; /* Necesario para posicionar la flecha de forma absoluta */
+align-items: center; /* ¡NUEVO! Alinea verticalmente el h3 y el icono */
+    gap: 8px;
+}
+
+/* Solución Bug #1: Saca la flecha del flujo y la coloca a la derecha */
+#ai-analysis-panel > .collapsible-header > .toggle-icon {
+    position: absolute;
+    right: 15px; /* La misma sangría que el resto */
+    top: 50%;
+    transform: translateY(-50%); /* Centrado vertical perfecto */
+}
+
+/* --- Ajustes a los paneles que AHORA están DENTRO --- */
+
+/* PANEL 2: AI ANALYSIS */
+#ai-analysis-panel {
+    padding: 0; /* El padding lo maneja el .collapsible-content */
+}
+#ai-analysis-panel > .collapsible-header > h3 {
+    color: #6a1b9a; /* Mantiene el título púrpura */
+}
 #ai-insight-box {
     margin-top: 0;
     padding: 0;
     border: none;
     box-shadow: none;
 }
+/* Mueve el filtro AI (que está dentro del panel) */
+#ai-filter-box {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee; /* Separador */
+}
+
 
 /* PANEL 3: KEY METRICS */
 #key-metrics-panel {
-    margin-top: 25px;
-    padding: 15px;
-    background: #ffffff;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    padding: 0; /* El padding lo maneja el .collapsible-content */
     text-align: center;
 }
-#key-metrics-panel > h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: #333;
-}
-/* Resetea el 'dependency-ratio-wrapper' que está AHORA DENTRO */
 #dependency-ratio-wrapper { 
     margin-top: 0; 
     padding-top: 0; 
@@ -547,26 +663,244 @@ body, html {
     flex-direction: column;
     gap: 15px; /* Espacio entre gráficos */
 }
-/* Estilo base para los contenedores de gráficos (ahora DENTRO del panel) */
-.chart-container { 
-    background: #fff; 
-    border: 1px solid #ddd; 
-    border-radius: 8px; 
-    overflow: hidden; /* Para los bordes redondeados */
-    padding: 15px; /* Dales el padding que tenían antes */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+.chart-container {
+    padding: 0; /* El padding lo maneja el .collapsible-content */
+    margin-top: 0; /* El gap de data-visuals-panel se encarga */
 }
-.chart-container h3 {
-    margin-top: 0;
-    text-align: center;
+.chart-container .collapsible-content {
+    padding: 15px; /* Restaura el padding para los canvas */
+}
+
+/* --- ESTILOS PARA EL CHATBOT DE IA (v4.5) --- */
+
+/* Cabecera del Chat (v4.5) */
+#ai-chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+#ai-chat-header label {
+    /* Sobrescribe el estilo de label anterior */
+    display: block;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 0; /* El wrapper maneja el margen */
+    text-align: left;
+}
+/* El tooltip de modo debe ser un poco más pequeño */
+#ai-chat-mode-tooltip svg {
+    width: 16px;
+    height: 16px;
+    color: #666;
+}
+#ai-chat-mode-tooltip:hover svg {
+    color: #333;
+}
+
+/* Hack para listas <ul> en tooltips (para el nuevo tooltip de ayuda) */
+.info-tooltip .tooltip-text ul {
+    line-height: 1.5;
+    padding-left: 20px;
+    margin-bottom: 0;
+    margin-top: 12px;
+}
+.info-tooltip .tooltip-text li {
+    margin-bottom: 5px;
+}
+
+/* === ARREGLO PARA CENTRAR TÍTULOS (H4) === */
+.h4-with-tooltip, .h-with-tooltip {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* Espacio entre el texto y el icono */
+}
+
+/* --- INICIO: ARREGLO BUG 2 (PLAN B) --- */
+/* 1. Estilo del Contenedor Global del Tooltip */
+
+.global-tooltip-container {
+    /* --- Posicionamiento --- */
+    position: fixed; /* ¡Clave! Se posiciona relativo a la ventana, no al sidebar */
+    top: 0;
+    left: 0;
+    z-index: 9999; /* Por encima de todo */
+    
+    /* --- Estilo Visual (copiado de .tooltip-text) --- */
+    width: 280px;
+    background-color: #ffffff;
+    color: #333;
+    text-align: left;
+    border-radius: 10px;
+    padding: 16px; 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.95rem; /* 15.2px */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.1);
+    border: 1px solid #e0e0e0;
+    
+    /* --- Comportamiento --- */
+    pointer-events: none; /* ¡Clave! El ratón pasa "a través" de él */
+    transition: opacity 0.2s ease;
+    opacity: 0;
+}
+
+/* 2. Estilos del contenido (copiados de .tooltip-text) */
+/* (Re-declaramos los estilos para asegurarnos de que se aplican) */
+
+.global-tooltip-container {
+    line-height: 0; /* Arreglo del nodo fantasma */
+}
+.global-tooltip-container > * {
+    line-height: 1.5; /* Devuelve la altura de línea */
+}
+.global-tooltip-container > strong {
     font-size: 1.1em;
-    color: #444;
+    color: #6a1b9a;
+    margin-bottom: 12px;
+    display: block;
+    font-weight: 600;
+}
+.global-tooltip-container p {
+    font-weight: normal; 
+    text-transform: none; 
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+.global-tooltip-container p strong,
+.global-tooltip-container p b {
+    color: #000; 
+    font-weight: bold;
+    display: inline;
+}
+.global-tooltip-container hr {
+    border: 0; 
+    border-top: 1px solid #eee; 
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+.global-tooltip-container p:last-child,
+.global-tooltip-container hr:last-child {
+    margin-bottom: 0;
+}
+.global-tooltip-container ul {
+    line-height: 1.5;
+    padding-left: 20px;
+    margin-bottom: 0;
+    margin-top: 12px;
+}
+.global-tooltip-container li {
+    margin-bottom: 5px;
+}
+/* 1. Estilo del nuevo separador <hr> */
+hr.ai-separator {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 25px 0 20px 0; /* Da espacio entre las dos secciones */
 }
 
-/* PANEL 5: AI FILTERS (movido al final) */
-#ai-filter-box { 
-    /* El estilo existente .ai-filter-box ya es correcto */
-    /* Lo único que hemos hecho es moverlo al final del HTML */
+/* 2. Estilo del nuevo título "Ask AI" y su wrapper */
+.ai-chat-title-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px; /* Espacio antes del chat */
+}
+.ai-chat-title-wrapper h4 {
+    margin: 0;
+    color: #6a1b9a; /* Un color de subtítulo estándar */
 }
 
-/* ===== FIN ESTILOS PANELES ===== */
+/* 3. Limpieza: ajusta el margen superior del chat-wrapper */
+#ai-chat-wrapper {
+    margin-top: 0; /* El wrapper del título ya tiene margen */
+    padding-top: 0;
+    border-top: none; /* El <hr> es el nuevo separador */
+}
+
+/* 4. Arreglo "Preguntas Rarillas" (Bug 3) */
+#ai-suggested-questions {
+    margin-top: 10px;
+    margin-bottom: 12px;
+    display: grid; /* <-- CAMBIO de flex a grid */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* <-- La magia */
+    gap: 8px;
+}
+/* --- INICIO: ARREGLO BUG 4 (Key Metrics Grid) --- */
+
+/* 1. Estilo de la nueva cuadrícula 2x2 */
+#metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas de igual tamaño */
+    gap: 15px; /* Espacio entre las cajas */
+}
+
+/* 2. Estilo de cada caja de métrica */
+.metric-box {
+    background-color: #fdfdfd;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+/* 3. Estilo de la etiqueta (ej. "Total Population") */
+.metric-label {
+    margin: 0 0 5px 0;
+    font-size: 0.9em;
+    color: #666;
+    text-transform: uppercase;
+}
+
+/* 4. Estilo del valor (ej. "120,450") */
+.metric-value {
+    margin: 0;
+    font-size: 1.8em; /* Más pequeño que el 2em de antes */
+    transition: color 0.3s;
+}
+
+/* 5. Asegura que el tooltip centrado funcione en la caja */
+.metric-box .label-with-tooltip {
+    /* (Ya tiene display:flex, justify-content:center) */
+    margin-bottom: 5px; /* Sobrescribe el default */
+}
+.metric-box .label-with-tooltip p {
+    margin: 0; /* Resetea el p dentro del label */
+}
+
+/* 6. Estilo de la leyenda pequeña para la ratio (MEJORADO) */
+.dependency-ratio-legend-small {
+    display: flex; /* <-- Usa flexbox */
+    justify-content: center; /* <-- Centra los items */
+    align-items: center; /* <-- Alinea verticalmente */
+    gap: 10px; /* <-- Espacio entre items */
+    font-size: 0.75em; /* <-- Un poco más pequeña */
+    color: #888;
+    margin-top: 4px;
+}
+.dependency-ratio-legend-small span { /* Estilo para cada grupo (caja + texto) */
+    display: inline-flex; /* <-- Alinea caja y texto */
+    align-items: center;
+}
+.dependency-ratio-legend-small .color-box {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    border-radius: 2px;
+    margin-right: 4px; /* <-- Espacio entre caja y texto */
+    vertical-align: middle; /* Ya no es necesario con flex, pero no hace daño */
+}
+/* (Los colores .ratio-low, etc. ya están definidos) */
+
+
+/* 7. Limpieza: Elimina estilos antiguos que ya no usamos */
+#dependency-ratio-wrapper {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+/* (La leyenda grande .dependency-ratio-legend ya no existe) */
+
+/* --- FIN: ARREGLO BUG 4 --- */
