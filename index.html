@@ -1,303 +1,164 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Lebanon Geo-Dashboard - Guillermo Martín</title>
-
     
-
     <link rel="icon" href="data:,"> 
-
     
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
     <link rel="stylesheet" href="style.css?v=1.4">
-
 </head>
-
 <body>
 
-
-
     <div class="container">
-
         
-
         <div class="sidebar">
-
-            <h2>Analysis Panel</h2>
-
-            
-
-            <div id="district-info">
-
-                <h3 id="district-name">Loading...</h3> 
-
-                <p id="district-parent">Please wait</p>
-
-                
-
-                <div id="dependency-ratio-wrapper">
-
-                    <div class="label-with-tooltip">
-
-                        <p>Dependency Ratio</p>
-
-                        <div class="info-tooltip">
-
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
-
-                                <title>Información sobre Tasa de Dependencia</title>
-
-                                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM8 4a.905.905 0 0 1 .9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4zm.002 6.17a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-
-                            </svg>
-
-<div class="tooltip-text">
-
-                                <strong>What is 'Dependency Ratio'?</strong>
-
-                                <p><strong>Calculation:</strong> (Total Youth + Total Elderly) &divide; Total Working-Age &times; 100</p>
-
-                                <p><strong>Interpretation:</strong> A ratio of <strong>60%</strong> means there are 60 "dependent" people (Youth & Elderly) for every 100 people of Working-Age.</p>
-
-                                <hr>
-
-                                <p><strong>In short:</strong> A key metric measuring the economic pressure on the productive population. <strong>A lower ratio is generally more favorable</strong>, indicating less burden on the workforce.</p>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <h3 id="dependency-ratio-value">--</h3>
-
-                    <div class="dependency-ratio-legend">
-
-                        <div><span class="color-box ratio-low"></span>Low (&lt;50)</div>
-
-                        <div><span class="color-box ratio-medium"></span>Medium (50-75)</div>
-
-                        <div><span class="color-box ratio-high"></span>High (&gt;75)</div>
-
-                    </div>
-
-                </div>
-
-
-
-                <button id="deselect-btn">Show Total Lebanon</button>
-
-            </div>
-
-            
-
-            <hr>
-
-            
-
-            <div class="filter-group" id="search-wrapper">
-
-                <label for="district-search">Search District:</label>
-
-                <input type="text" id="district-search" placeholder="Type to search..." autocomplete="off">
-
-                <span id="search-clear-btn">&times;</span> 
-
-                <div id="autocomplete-results"></div>
-
-            </div>
-
-            
-
-            <hr> 
-
-            
-
-            <div class="filter-group">
-
-                <label>Year:</label>
-
-                <div id="year-button-group">
-
-                    </div>
-
-            </div>
-
-
-
-            <hr> 
-
-            
-
-            <div class="chart-container">
-
-                <h3>Population Pyramid</h3>
-
-                <canvas id="pyramidChart"></canvas>
-
-            </div>
-
-            
-
-            <div class="chart-container">
-
-                <h3>Time Series Trend</h3>
-
-                <canvas id="timeSeriesChart"></canvas>
-
-            </div>
-
-
-
-            <div id="ai-filter-box">
-
-                <h4 class="h4-with-tooltip">
-
-                    <span>AI Trend Filter</span>
-
-                    <div class="info-tooltip">
-
-<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
-
-                            <title>Información sobre Filtros de Tendencias IA</title>
-
-                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM8 4a.905.905 0 0 1 .9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4zm.002 6.17a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-
-                        </svg>
-
-                       <div class="tooltip-text">
-
-    <strong>What is 'AI Trend Classification'?</strong>
-
-    <p><strong>Details:</strong> These tags (e.g., "Aging", "Youth Bulge") are pre-calculated. Each district is analyzed and classified based on a statistical model of its demographic <strong>share</strong> (% of population) and <strong>growth rate</strong> (2015-2030) for key age groups.</p>
-
+    <h2>Analysis Panel</h2>
+    
+    <div id="district-info">
+        <h3 id="district-name">Loading...</h3> 
+        <p id="district-parent">Please wait</p>
+        <button id="deselect-btn">Show Total Lebanon</button>
+    </div>
+    
     <hr>
-
-    <p><strong>In short:</strong> This filter instantly highlights all districts on the map that share the same significant demographic profile, allowing for a rapid, targeted analysis.</p>
-
-</div>
-
-                    </div>
-
-                </h4>
-
-                <p>Filter the map by key demographic trends.</p>
-
-                <div id="ai-filter-buttons">
-
-                    </div>
-
-            </div>
-
-
-
-            <div id="ai-insight-box">
-
-                <h4 class="h4-with-tooltip"> 
-
-                    <span>
-
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-lightbulb-fill" viewBox="0 0 16 16">
-
-                        <title>Perspectiva de Política de IA</title>
-
-                        <path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13h-5a.5.5 0 0 1-.46-.302l-.761-1.77a1.964 1.964 0 0 0-.453-.618A5.984 5.984 0 0 1 2 6zm6 8.5a.5.5 0 0 1 .5-.5h.5a.5.5 0 0 1 0 1l-.224.447a.5.5 0 0 1-.894-.447L8 14.5z"/>
-
-                        </svg>
-
-                        <span>AI Policy Insight</span>
-
-                    </span>
-
-                    
-
-<div class="info-tooltip">
-
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
-
-        <title>Información sobre AI Policy Insight</title>
-
-        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM8 4a.905.905 0 0 1 .9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4zm.002 6.17a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-
-    </svg>
-
-   <div class="tooltip-text tooltip-top"> <strong>What is 'AI Policy Insight'?</strong>
-
-        <p><strong>Details:</strong> An automated analysis that highlights the <strong>primary demographic challenge or opportunity</strong> for the selected district. It's designed to frame the complex data profile into a single, clear, and policy-focused statement.</p>
-
-        <p><strong>In short:</strong> A concise executive summary that translates the district's key demographic trend into its <strong>core policy implication</strong>.</p>
-
-        <hr>
-
-        <p><strong>How it Works:</strong> This insight is <strong>not generated live</strong> in your browser. Instead, key demographic metrics (like growth and population share) for each district were fed to a Generative AI model (Google's Gemini). The AI's single-sentence analysis was then captured and stored directly in the <code>ai_insight</code> property of the GeoJSON file.</p>
-
+    
+    <div class="filter-group" id="search-wrapper">
+        <label for="district-search">Search District:</label>
+        <input type="text" id="district-search" placeholder="Type to search..." autocomplete="off">
+        <span id="search-clear-btn">&times;</span> 
+        <div id="autocomplete-results"></div>
+    </div>
+    
+    <hr> 
+    
+    <div class="filter-group">
+        <label>Year:</label>
+        <div id="year-button-group">
+        </div>
     </div>
 
-</div>
+    <hr> 
 
-                </h4>
+    <div id="ai-analysis-panel">
+        <h3 class="h-with-tooltip">
+            <span>AI-Powered Analysis</span>
+            </h3>
 
-                <p id="ai-insight-text">Click a district to generate analysis...</p>
-
-<div id="ai-chat-wrapper">
-
-    <label for="ai-chat-input">Ask a follow-up question:</label>
-
-    <textarea id="ai-chat-input" rows="2" placeholder="e.g., What are the biggest challenges here?"></textarea>
-
-    <div id="ai-suggested-questions">
-
-    <button class="suggested-q-btn" data-question="¿Cuál es el principal desafío demográfico aquí?">¿Principal desafío?</button>
-
-    <button class="suggested-q-btn" data-question="¿Cómo está creciendo esta población (jóvenes vs ancianos)?">¿Crecimiento?</button>
-
-    <button class="suggested-q-btn" data-question="¿Cómo se compara este distrito con el promedio nacional?">¿Comparativa nacional?</button>
-
-</div>
-
-    <button id="ai-chat-submit">
-
-        <span class="button-text">Ask AI</span>
-
-        <span class="button-spinner" style="display: none;"></span>
-
-    </button>
-
-    <div id="ai-chat-response"></div>
-
-</div>
-
-            </div>
-
+        <div id="ai-insight-box">
+            <h4 class="h4-with-tooltip"> 
+                <span>
+                    <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="18" height="18" fill="currentColor" class="bi bi-lightbulb-fill" viewBox="0 0 16 16">
+                        <title>AI Policy Insight</title>
+                        <path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13h-5a.5.5 0 0 1-.46-.302l-.761-1.77a1.964 1.964 0 0 0-.453-.618A5.984 5.984 0 0 1 2 6zm6 8.5a.5.5 0 0 1 .5-.5h.5a.5.5 0 0 1 0 1l-.224.447a.5.5 0 0 1-.894-.447L8 14.5z"/>
+                    </svg>
+                    <span>AI Policy Insight</span>
+                </span>
+                
+                <div class="info-tooltip">
+                    <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="18" height="18" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                        <title>Información sobre AI Policy Insight</title>
+                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM8 4a.905.905 0 0 1 .9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4zm.002 6.17a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </svg>
+                   <div class="tooltip-text tooltip-top">
+                        <strong>What is 'AI Policy Insight'?</strong>
+                        <p><strong>Details:</strong> An automated analysis that highlights the <strong>primary demographic challenge or opportunity</strong> for the selected district.</p>
+                        <hr>
+                        <p><strong>How it Works:</strong> This insight is <strong>not generated live</strong>. Key metrics for each district were fed to a Generative AI, and the analysis was stored in the GeoJSON file.</p>
+                   </div>
+               </div>
+            </h4>
+            <p id="ai-insight-text">Click a district to generate analysis...</p>
         </div>
 
+        <div id="ai-chat-wrapper">
+            <label for="ai-chat-input">Ask a follow-up question:</label>
+            <textarea id="ai-chat-input" rows="2" placeholder="e.g., What are the biggest challenges here?"></textarea>
+            
+            <div id="ai-suggested-questions">
+                <button class="suggested-q-btn" data-question="¿Cuál es el principal desafío demográfico aquí?">¿Principal desafío?</button>
+                <button class="suggested-q-btn" data-question="¿Cómo está creciendo esta población (jóvenes vs ancianos)?">¿Crecimiento?</button>
+                <button class="suggested-q-btn" data-question="¿Cómo se compara este distrito con el promedio nacional?">¿Comparativa nacional?</button>
+            </div>
 
-
-        <div class="sidebar-resizer" id="drag-handle"></div>
-
-
-
-        <div id="map"></div>
-
+            <button id="ai-chat-submit">
+                <span class="button-text">Ask AI</span>
+                <span class="button-spinner" style="display: none;"></span>
+            </button>
+            <div id="ai-chat-response"></div>
+        </div>
     </div>
 
+    <div id="key-metrics-panel">
+        <h3>Key Metrics (<span id="metrics-year">2025</span>)</h3>
+        <div id="dependency-ratio-wrapper">
+            <div class="label-with-tooltip">
+                <p>Dependency Ratio</p>
+                <div class="info-tooltip">
+                    <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="18" height="18" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                        <title>Información sobre Tasa de Dependencia</title>
+                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM8 4a.905.905 0 0 1 .9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4zm.002 6.17a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </svg>
+                    <div class="tooltip-text">
+                        <strong>What is 'Dependency Ratio'?</strong>
+                        <p><strong>Calculation:</strong> (Total Youth + Total Elderly) &divide; Total Working-Age &times; 100</p>
+                        <p><strong>Interpretation:</strong> A ratio of <strong>60%</strong> means there are 60 "dependent" people for every 100 people of Working-Age.</p>
+                        <hr>
+                        <p><strong>In short:</strong> A key metric measuring the economic pressure on the productive population. <strong>A lower ratio is generally more favorable</strong>.</p>
+                    </div>
+                </div>
+            </div>
+            <h3 id="dependency-ratio-value">--</h3>
+            <div class="dependency-ratio-legend">
+                <div><span class="color-box ratio-low"></span>Low (&lt;50)</div>
+                <div><span class="color-box ratio-medium"></span>Medium (50-75)</div>
+                <div><span class="color-box ratio-high"></span>High (&gt;75)</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="data-visuals-panel">
+        <div class="chart-container">
+            <h3>Population Pyramid</h3>
+            <canvas id="pyramidChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <h3>Time Series Trend</h3>
+            <canvas id="timeSeriesChart"></canvas>
+        </div>
+    </div>
 
+    <div id="ai-filter-box">
+        <h4 class="h4-with-tooltip">
+            <span>AI Trend Filter</span>
+            <div class="info-tooltip">
+                <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="18" height="18" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                    <title>Información sobre Filtros de Tendencias IA</title>
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM8 4a.905.905 0 0 1 .9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4zm.002 6.17a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                </svg>
+               <div class="tooltip-text">
+                <strong>What is 'AI Trend Classification'?</strong>
+                <p><strong>Details:</strong> These tags (e.g., "Aging", "Youth Bulge") are pre-calculated based on a statistical model of a district's demographic <strong>share</strong> and <strong>growth rate</strong>.</p>
+                <hr>
+                <p><strong>In short:</strong> This filter instantly highlights all districts on the map that share the same significant demographic profile.</p>
+               </div>
+            </div>
+        </h4>
+        <p>Filter the map by key demographic trends.</p>
+        <div id="ai-filter-buttons">
+        </div>
+    </div>
+
+</div>
+
+        <div id="map"></div>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script src="app.js"></script>
-
 </body>
-
 </html>
