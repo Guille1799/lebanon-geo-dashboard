@@ -13,7 +13,7 @@ body, html {
     overflow-y: auto; z-index: 1000; box-sizing: border-box;
 }
 
-/* Info Distrito */
+/* Info Distrito (PANEL 1) */
 #district-info {
     padding: 10px; background: #ffffff; border-radius: 5px; margin-bottom: 20px;
     text-align: center; border: 1px solid #ddd; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
@@ -36,18 +36,31 @@ body, html {
 }
 #deselect-btn:hover { background-color: #333; }
 
-/* Grupo Filtros y Gráficos */
+/* Grupo Filtros */
 .filter-group { margin-bottom: 20px; }
-.chart-container { margin-top: 20px; }
 
-/* Estilo "AI Policy Insight" */
-#ai-insight-box {
+
+/* ===== ESTILOS PANELES REORDENADOS (v4.5) ===== */
+
+/* PANEL 2: AI ANALYSIS */
+#ai-analysis-panel {
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     margin-top: 25px;
     padding: 15px;
-    background: #ffffff; /* Fondo blanco */
-    border-radius: 8px;
-    border: 1px solid #ddd; /* Borde estándar */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Sombra sutil */
+}
+#ai-analysis-panel > h3 {
+    margin-top: 0;
+    text-align: center;
+    color: #6a1b9a;
+}
+#ai-insight-box {
+    margin-top: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
 }
 #ai-insight-box h4 {
     margin-top: 0;
@@ -69,6 +82,124 @@ body, html {
     margin-top: 10px;
     margin-bottom: 0; /* Reseteo */
 }
+
+
+/* PANEL 3: KEY METRICS */
+#key-metrics-panel {
+    margin-top: 25px;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    text-align: center;
+}
+#key-metrics-panel > h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+}
+/* Mover Tasa de Dependencia */
+#dependency-ratio-wrapper { 
+    margin-top: 0; 
+    padding-top: 0; 
+    border-top: none; 
+}
+#dependency-ratio-wrapper h3 { margin: 0; font-size: 2em; transition: color 0.3s; }
+#dependency-ratio-wrapper > .label-with-tooltip > p { margin: 0 8px 0 0; font-size: 0.9em; color: #666; text-transform: uppercase; }
+
+
+/* PANEL 4: DATA VISUALS */
+#data-visuals-panel {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espacio entre gráficos */
+}
+.chart-container { 
+    background: #fff; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    overflow: hidden; /* Clave para la animación */
+}
+
+/* --- ESTILOS PANELES PLEGABLES (v4.5) --- */
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 12px 15px;
+    background: #f9f9f9;
+    border-bottom: 1px solid #eee;
+}
+.chart-header:hover {
+    background: #f1f1f1;
+}
+.chart-header h3 {
+    margin: 0;
+    font-size: 1.1em;
+    color: #444;
+}
+.toggle-icon {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.3s ease;
+    color: #555;
+    transform: rotate(0deg); /* Estado por defecto: abierto */
+}
+.chart-content {
+    /* Animación de altura */
+    max-height: 1000px; /* Un valor alto para el estado abierto */
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+    padding: 15px;
+    box-sizing: border-box;
+}
+/* Estado colapsado */
+.collapsible.collapsed .chart-content {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+.collapsible.collapsed .chart-header {
+    border-bottom: 1px solid #ddd; /* Borde visible cuando está plegado */
+}
+.collapsible.collapsed .toggle-icon {
+    transform: rotate(-90deg); /* Gira la flecha */
+}
+/* Hacemos que la pirámide empiece colapsada por defecto */
+.collapsible.collapsed-default {
+    max-height: 46px; /* Altura del header */
+}
+.collapsible.collapsed-default .chart-content {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.collapsible.collapsed-default .toggle-icon {
+    transform: rotate(-90deg);
+}
+
+/* PANEL 5: AI FILTERS */
+#ai-filter-box { 
+    margin-top: 25px; 
+    padding: 15px; 
+    background: #fff; 
+    border-radius: 8px; 
+    border: 1px solid #ddd; 
+}
+#ai-filter-box h4 { margin-top: 0; }
+#ai-filter-box > p { 
+    font-size: 0.9em; 
+    color: #777; 
+    margin: -5px 0 10px 0; 
+}
+
+
+/* ===== FIN ESTILOS PANELES ===== */
+
 
 /* Mapa */
 #map { flex: 1; height: 100vh; background: #e0e0e0; }
@@ -115,11 +246,6 @@ body, html {
 }
 .sidebar-resizer:hover { background: #6a1b9a; }
 
-/* Tasa Dependencia */
-#dependency-ratio-wrapper { margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; }
-#dependency-ratio-wrapper h3 { margin: 0; font-size: 2em; transition: color 0.3s; }
-#dependency-ratio-wrapper > .label-with-tooltip > p { margin: 0 8px 0 0; font-size: 0.9em; color: #666; text-transform: uppercase; }
-
 
 /* --- INICIO: SECCIÓN DE TOOLTIPS UNIFICADA (LIMPIA) --- */
 
@@ -131,6 +257,15 @@ body, html {
     margin-bottom: 5px; 
     gap: 8px;
 }
+/* Modificador para h3 y h4 */
+.h-with-tooltip {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* Espacio entre el texto y el icono */
+    margin-bottom: 5px; /* Ajusta el margen que tenías en h4 */
+}
+
 
 /* El 'trigger' del tooltip (el icono de información) */
 .info-tooltip {
@@ -180,18 +315,23 @@ body, html {
 }
 
 /* --- INICIO: LA SOLUCIÓN DEL NODO FANTASMA --- */
-
-/* 1. MATA la altura de línea de los nodos de texto fantasma */
 .info-tooltip .tooltip-text {
     /* ... (todos los estilos que ya tiene) ... */
     line-height: 0; /* ¡AQUÍ ESTÁ LA MAGIA! */
 }
-
 /* 2. DEVUELVE la altura de línea a los elementos HTML REALES */
 .info-tooltip .tooltip-text > * {
     line-height: 1.5; /* El valor original que queríamos */
 }
-
+/* Hack para listas <ul> */
+.info-tooltip .tooltip-text ul {
+    line-height: 1.5;
+    padding-left: 20px;
+    margin-bottom: 0;
+}
+.info-tooltip .tooltip-text li {
+    margin-bottom: 5px;
+}
 /* --- FIN: LA SOLUCIÓN DEL NODO FANTASMA --- */
 
 /* Mostrar al hacer hover */
@@ -202,8 +342,6 @@ body, html {
 }
 
 /* --- ESTILOS DE CONTENIDO INTERNO (AHORA FUNCIONARÁN) --- */
-
-/* Título (strong) principal */
 .info-tooltip .tooltip-text > strong {
     font-size: 1.1em; /* 110% del tamaño base */
     color: #6a1b9a;
@@ -211,64 +349,43 @@ body, html {
     display: block;
     font-weight: 600;
 }
-
-/* Párrafos (p) dentro del tooltip */
 .info-tooltip .tooltip-text p {
-    /* Hereda font-size y color del padre (.tooltip-text) */
     font-weight: normal; 
     text-transform: none; 
     margin-top: 0;
     margin-bottom: 12px; /* Espacio estándar entre párrafos */
 }
-
-/* Negrita (strong) DENTRO de un párrafo */
 .info-tooltip .tooltip-text p strong,
 .info-tooltip .tooltip-text p b {
     color: #000; 
     font-weight: bold;
     display: inline;
 }
-
-/* Separador HR */
 .info-tooltip .tooltip-text hr {
     border: 0; 
     border-top: 1px solid #eee; 
-    
-    /* Solución al margen doble: */
     margin-top: 0; /* El párrafo de arriba ya tiene 12px */
     margin-bottom: 12px; /* Espacio antes del siguiente párrafo */
 }
-
-/* El último elemento (párrafo O hr) no tiene margen inferior */
 .info-tooltip .tooltip-text p:last-child,
 .info-tooltip .tooltip-text hr:last-child {
     margin-bottom: 0;
 }
-
 /* --- FIN DE ESTILOS DE CONTENIDO --- */
 
 
 /* --- MODIFICADOR DE POSICIÓN TOOLTIP (REVISADO) --- */
-
-/* Clase 'tooltip-top' para forzar la apertura hacia arriba (para AI Policy Insight) */
 .info-tooltip .tooltip-text.tooltip-top {
-    /* Sobrescribe la posición vertical y lateral */
     top: auto;
     bottom: 100%; /* 1. Alinea la base del tooltip con la cima del icono */
     margin-bottom: 8px; /* 2. Añade un espacio */
-    
     right: 50%;
     left: auto;
-    
-    /* Centra horizontalmente y resetea la transformación Y */
     transform: translateX(50%) scale(0.95);
 }
-
-/* Ajuste del hover para la nueva transformación */
 .info-tooltip:hover .tooltip-text.tooltip-top {
     transform: translateX(50%) scale(1);
 }
-
 /* --- FIN: MODIFICADOR DE POSICIÓN TOOLTIP --- */
 
 /* Leyenda Ratio */
@@ -292,17 +409,6 @@ body, html {
 .year-btn.active { background-color: #6a1b9a; color: white; }
 
 /* Botones Filtro IA */
-#ai-filter-box { margin-top: 25px; padding: 15px; background: #fff; border-radius: 8px; border: 1px solid #ddd; }
-#ai-filter-box h4 { margin-top: 0; }
-
-
-/* Esta regla ahora SOLO se aplica al <p> de descripción */
-#ai-filter-box > p { 
-    font-size: 0.9em; 
-    color: #777; 
-    margin: -5px 0 10px 0; 
-}
-
 #ai-filter-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .ai-filter-btn {
     padding: 10px; font-size: 0.9em; font-weight: bold; background-color: #eee;
@@ -315,36 +421,21 @@ body, html {
 
 /* === ESTILOS PARA FILTROS AI (MODIFICADOS) === */
 
-/* Alinea el título y el icono de info */
-.h4-with-tooltip {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px; /* Espacio entre el texto y el icono */
-    margin-bottom: 5px; /* Ajusta el margen que tenías en h4 */
-}
-
-
 /* 1. Estilo para el contenedor del botón + tooltip */
 .ai-filter-btn-wrapper {
     position: relative; /* Contenedor para el tooltip absoluto */
     display: flex; /* Asegura que el botón se expanda */
     z-index: 1; /* z-index base para el solapamiento */
 }
-
-/* Eleva el wrapper entero al pasar el ratón para que el tooltip
-   se muestre por encima de los botones hermanos */
 .ai-filter-btn-wrapper:hover {
     z-index: 10;
 }
-
 /* 2. Haz que el botón principal crezca */
 .ai-filter-btn-wrapper .ai-filter-btn {
     flex-grow: 1; /* El botón ocupa todo el espacio */
     padding-right: 30px;
     text-align: center;
 }
-
 /* 3. Posiciona el icono del tooltip */
 .ai-filter-btn-wrapper .info-tooltip {
     position: absolute;
@@ -352,16 +443,13 @@ body, html {
     right: 10px; /* 10px desde el borde derecho */
     transform: translateY(-50%); /* Centrado vertical */
 }
-
 /* 4. Centra tooltips para botones de COLUMNA DERECHA */
-/* (El primer botón es el 'clear-wrapper', por eso empezamos en 3) */
 .ai-filter-btn-wrapper:nth-child(3) .tooltip-text,
 .ai-filter-btn-wrapper:nth-child(5) .tooltip-text {
     top: 50%; /* Centra verticalmente */
     transform: translateY(-50%); /* Centra verticalmente */
     right: 105%; /* Mantiene la dirección a la izquierda */
 }
-
 /* 5. Centra tooltips para botones de COLUMNA IZQUIERDA */
 .ai-filter-btn-wrapper:nth-child(even) .tooltip-text {
     right: auto;
@@ -370,8 +458,6 @@ body, html {
     top: 50%; /* Centra verticalmente */
     transform: translateY(-50%); /* Centra verticalmente */
 }
-
-
 /* 6. Haz que el botón "Clear" ocupe las dos columnas */
 .ai-filter-btn-wrapper.clear-wrapper {
     grid-column: 1 / -1; /* Ocupa todo el ancho del grid */
@@ -384,14 +470,30 @@ body, html {
     border-top: 1px solid #eee;
 }
 
-#ai-chat-wrapper label {
-    display: block;
+/* Cabecera del Chat (v4.5) */
+#ai-chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+#ai-chat-header label {
     font-size: 0.9em;
     font-weight: bold;
     color: #666;
-    margin-bottom: 8px;
+    margin-bottom: 0; /* El wrapper maneja el margen */
     text-align: left;
 }
+/* El tooltip de modo debe ser un poco más pequeño */
+#ai-chat-mode-tooltip svg {
+    width: 16px;
+    height: 16px;
+    color: #666;
+}
+#ai-chat-mode-tooltip:hover svg {
+    color: #333;
+}
+
 
 #ai-chat-input {
     width: 100%;
@@ -405,6 +507,31 @@ body, html {
     resize: vertical; /* Permite redimensionar verticalmente */
     margin-bottom: 10px;
 }
+
+/* Espaciado de botones sugeridos (v4.5) */
+#ai-suggested-questions {
+    margin-top: 0; /* El input ya tiene margen */
+    margin-bottom: 12px; /* <-- EL ARREGLO */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.suggested-q-btn {
+    padding: 6px 10px;
+    font-size: 0.85em;
+    font-weight: bold;
+    background-color: #f0e6f6; /* Púrpura muy pálido */
+    color: #6a1b9a;            /* Púrpura "AI" */
+    border: 1px solid #d1b3e6;
+    border-radius: 20px;       /* Píldoras */
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.suggested-q-btn:hover {
+    background-color: #e0c2f0;
+    border-color: #6a1b9a;
+}
+
 
 #ai-chat-submit {
     width: 100%;
@@ -457,37 +584,10 @@ body, html {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
-/* --- ESTILOS DE ROBUSTEZ (v4.0) --- */
 
-/* 1. Estilo para la respuesta de error */
+/* --- ESTILO DE ERROR (v4.0) --- */
 #ai-chat-response.error {
     background-color: #fff5f5; /* Rojo pálido */
     border-color: #e53e3e;     /* Borde rojo */
     color: #c53030;            /* Texto rojo oscuro */
-}
-
-/* 2. Contenedor para las preguntas sugeridas */
-#ai-suggested-questions {
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-/* 3. Estilo de los botones de sugerencia */
-.suggested-q-btn {
-    padding: 6px 10px;
-    font-size: 0.85em;
-    font-weight: bold;
-    background-color: #f0e6f6; /* Púrpura muy pálido */
-    color: #6a1b9a;            /* Púrpura "AI" */
-    border: 1px solid #d1b3e6;
-    border-radius: 20px;       /* Píldoras */
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.suggested-q-btn:hover {
-    background-color: #e0c2f0;
-    border-color: #6a1b9a;
 }
