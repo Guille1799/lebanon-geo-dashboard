@@ -38,7 +38,6 @@ body, html {
 
 /* Grupo Filtros y Gráficos */
 .filter-group { margin-bottom: 20px; }
-.chart-container { margin-top: 20px; }
 
 /* Estilo "AI Policy Insight" */
 #ai-insight-box {
@@ -548,7 +547,7 @@ margin-bottom: 12px;
     border-radius: 8px;
     border: 1px solid #ddd;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    margin-top: 20px;
+    margin-bottom: 20px;
     overflow: hidden; /* ¡Clave para la animación! */
 }
 
@@ -656,7 +655,6 @@ margin-bottom: 12px;
 }
 .chart-container {
     padding: 0; /* El padding lo maneja el .collapsible-content */
-    margin-top: 0; /* El gap de data-visuals-panel se encarga */
 }
 .chart-container .collapsible-content {
     padding: 15px; /* Restaura el padding para los canvas */
@@ -904,7 +902,7 @@ hr.ai-separator {
 #sortable-panels-container {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Espacio entre todos los paneles móviles */
+    
 }
 
 /* * El panel de AI ya tiene un <hr> encima, así que
@@ -991,6 +989,7 @@ hr.ai-separator {
 /* 2. Contenedor de Filtros (Ahora contiene TODO) */
 .control-container {
     padding: 0 20px; /* Padding lateral */
+    margin-bottom: 20px;
 }
 
 /* 3. Nuevo Título Integrado */
