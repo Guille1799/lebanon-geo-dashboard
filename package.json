@@ -1,7 +1,12 @@
 {
-  "name": "lebanon-geo-dashboard-functions",
+  "name": "lebanon-geo-dashboard",
   "version": "1.0.0",
-  "description": "Backend functions for the dashboard",
+  "description": "Interactive demographic geo-dashboard for Lebanon with AI-assisted analysis",
+  "private": true,
+  "scripts": {
+    "dev": "npx netlify dev",
+    "serve": "npx netlify dev --offline"
+  },
   "dependencies": {
     "@google/generative-ai": "^0.15.0"
   }
