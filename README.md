@@ -1,8 +1,9 @@
-# Lebanon Geo-Dashboard
+# Lebanon Geo-Dashboard (UN ESCWA)
 
-Interactive geospatial dashboard for demographic analysis in Lebanon (Admin Level 3), built for a technical assignment with UN ESCWA.
+**Repository:** [github.com/Guille1799/lebanon-geo-dashboard](https://github.com/Guille1799/lebanon-geo-dashboard)  
+**Live demo:** [onulibanodashboard.netlify.app](https://onulibanodashboard.netlify.app/)
 
-Live demo: [onulibanodashboard.netlify.app](https://onulibanodashboard.netlify.app/)
+Interactive geospatial dashboard for demographic analysis in Lebanon (Admin Level 3), built for a technical assignment with **UN ESCWA**. In fragile and highly unequal contexts, **who** is affected and **where** they live are central to prioritisation—this tool supports **policy-facing exploration** with **WorldPop**-aligned population structure, **Leaflet** mapping, Chart.js, and **AI-assisted** analysis (Netlify Functions + Gemini) with **defensive prompting** so outputs stay reviewable in high-stakes settings.
 
 ## What this project does
 
