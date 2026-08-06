@@ -12,9 +12,9 @@ Interactive geospatial dashboard for demographic analysis in Lebanon (Admin Leve
 - Shows population pyramid and time-series evolution by age groups.
 - Computes and displays dependency ratio to support policy interpretation.
 - Includes AI-assisted analysis:
-  - **Pre-calculated AI Policy Insight** per district (stored in data).
+  - **Pre-computed rule-based summary** per district (stored in data).
   - **Live Q&A assistant** constrained to dashboard data only.
-  - **AI Trend Filter** to highlight districts with similar demographic profiles.
+  - **Rule-based demographic classifier** (percentile thresholds) to highlight districts with similar profiles.
 
 ## Key features
 
@@ -43,7 +43,7 @@ Interactive geospatial dashboard for demographic analysis in Lebanon (Admin Leve
 
 - Dependency Ratio:
   - `(Population 0-19 + Population 65+) / Population 20-64 * 100`
-- AI Trend Filter categories are based on pre-calculated thresholds over demographic share and growth patterns.
+- Classifier categories are rule-based: pre-calculated percentile thresholds over demographic share and growth patterns. No model is involved.
 - A minimum population threshold is used to reduce noisy inference in very small districts.
 - The map can be switched between:
   - Total Population
@@ -51,7 +51,7 @@ Interactive geospatial dashboard for demographic analysis in Lebanon (Admin Leve
 
 ## Responsible AI and defensive prompting
 
-The live AI assistant uses server-side prompting rules designed to reduce hallucinations and prompt-injection risk:
+The live assistant uses prompt-level defenses to keep answers grounded in the dashboard data. These run client-side, so they are a usability guardrail rather than a security boundary — server-side hardening is the next step:
 
 - Restricts answers to metrics available in the dashboard data.
 - Refuses requests outside the demographic scope.
