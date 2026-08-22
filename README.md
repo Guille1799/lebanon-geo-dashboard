@@ -23,7 +23,7 @@ Interactive geospatial dashboard for demographic analysis in Lebanon (Admin Leve
 - Draggable, collapsible analysis panels (customizable workspace).
 - Sidebar resizing for different screen workflows.
 - Local persistence of user settings (selected district, year, panel order, map theme).
-- Data quality guardrail: districts below population threshold are marked as low-confidence for statistical interpretation.
+- Data quality guardrail — and its known limit: districts below the population threshold are excluded from the generated narrative text, **but the trend tag itself is not gated by that threshold**. Some very small localities therefore still carry a tag that is not statistically supported. This is stated rather than papered over; see the limitation note above `classifyTrend()` in `app.js`.
 
 ## Tech stack
 

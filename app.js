@@ -570,11 +570,23 @@ function updateTimeSeriesChart(props) {
 
 /* === DENTRO DE APP.JS === */
 
-    // --- ¡LÓGICA DE CLASIFICACIÓN ACTUALIZADA! ---
-    // (Hemos suavizado los umbrales para asegurar que los distritos se clasifiquen)
+    // --- Trend classification: KNOWN LIMITATION, documented on purpose ---
+    //
+    // This returns the pre-computed `ai_trend_tag` as-is. It does NOT re-check the population
+    // threshold, and that asymmetry is easy to misread:
+    //
+    //   * the threshold DOES gate the generated narrative text and the prompt
+    //   * the threshold does NOT gate the tag returned here
+    //
+    // Consequence on the current dataset: a number of localities below POPULATION_THRESHOLD
+    // still carry a substantive tag, including some with a recorded population of zero. Those
+    // tags should not be read as statistically supported.
+    //
+    // Documented rather than hidden by loosening the rule: the useful version of this dashboard
+    // is the one that says where its own classification stops being reliable.
     function classifyTrend(props) {
         if (!props) return aiTrendLabels.MIXED;
-        // Simplemente lee la etiqueta pre-calculada
+        // Reads the pre-computed label; see the limitation note above before interpreting it.
         return props.ai_trend_tag || aiTrendLabels.MIXED;
 }
 
