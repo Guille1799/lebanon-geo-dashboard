@@ -124,4 +124,4 @@ each source before redistributing `lebanon_data_tagged.geojson`.
 ## Author
 
 Guillermo Martin de Oliva Carranza  
-LinkedIn: [guillermo-martin-de-oliva-carranza](https://www.linkedin.com/in/guillermo-martin-de-oliva/)
+LinkedIn: [guillermo-martin-de-oliva](https://www.linkedin.com/in/guillermo-martin-de-oliva/)
