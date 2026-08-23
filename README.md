@@ -113,7 +113,15 @@ This runs a local Netlify environment so both frontend and `/.netlify/functions/
 - Contextual indicators (economy, labor, health system capacity) are not embedded in the current dataset.
 - AI output quality depends on clarity of user questions and strictness of guardrails.
 
+## License
+
+Code in this repository is released under the **MIT License** (see [`LICENSE`](LICENSE)).
+
+The data is **not** covered by that licence and keeps its own terms: population estimates and
+projections come from **WorldPop** (CC BY 4.0) and administrative boundaries from **HDX**. Check
+each source before redistributing `lebanon_data_tagged.geojson`.
+
 ## Author
 
 Guillermo Martin de Oliva Carranza  
-LinkedIn: [guillermo-martin-de-oliva-carranza](https://www.linkedin.com/in/guillermo-martin-de-oliva-carranza-58391817a/)
+LinkedIn: [guillermo-martin-de-oliva-carranza](https://www.linkedin.com/in/guillermo-martin-de-oliva/)
