@@ -219,7 +219,11 @@ exports.handler = async (event) => {
                 // distingue "ese modelo no existe" de "la clave no vale". La clave nunca sale
                 // de aqui: Google devuelve el motivo, no el secreto.
                 const codigo = (err && (err.status || err.name)) || "unknown";
-                const motivo = String((err && err.message) || "").replace(/\s+/g, " ").slice(0, 90);
+                // La COLA, no la cabeza: el SDK envuelve la causa real al final del mensaje,
+                // detras de su propio prefijo y de la URL. Recortando por delante se leia
+                // "Error fetching from https://..." tres veces y el motivo se perdia.
+                const crudo = String((err && err.message) || "").replace(/\s+/g, " ");
+                const motivo = crudo.length > 160 ? "..." + crudo.slice(-160) : crudo;
                 fallos.push(nombre + ": " + codigo + (motivo ? " — " + motivo : ""));
             }
         }
