@@ -7,7 +7,10 @@ Interactive geospatial dashboard for demographic analysis in Lebanon (Admin Leve
 
 ## What this project does
 
-- Visualizes population structure by district with an interactive choropleth map.
+- Visualizes population structure across Lebanon's **1,545 localities (ADM3)**, inside 26 districts
+  (caza) and 8 governorates, with an interactive choropleth map. The source file carries 1,611
+  records: one is a `Conflict` pseudo-record and 65 are `Litige` — disputed border stretches from the
+  OCHA file, not places. Eight of those 65 carried a demographic archetype. They are excluded.
 - Compares trends across selected years (2015, 2018, 2020, 2023, 2025, 2030).
 - Shows population pyramid and time-series evolution by age groups.
 - Computes and displays dependency ratio to support policy interpretation.
@@ -23,7 +26,15 @@ Interactive geospatial dashboard for demographic analysis in Lebanon (Admin Leve
 - Draggable, collapsible analysis panels (customizable workspace).
 - Sidebar resizing for different screen workflows.
 - Local persistence of user settings (selected district, year, panel order, map theme).
-- Data quality guardrail — and its known limit: districts below the population threshold are excluded from the generated narrative text, **but the trend tag itself is not gated by that threshold**. Some very small localities therefore still carry a tag that is not statistically supported. This is stated rather than papered over; see the limitation note above `classifyTrend()` in `app.js`.
+- Data quality guardrail, applied in one place. The population threshold lives in `reliability.js`
+  and every path asks the same predicate: the narrative text, the model prompt, the map colouring,
+  the trend classifier and the metrics panel.
+
+  It used not to. The threshold gated the text and the prompt but not the tag, so **291 localities —
+  44% of every substantive tag in the file** — were highlighted by the filter while their own panel
+  refused to analyse them. Two of the guards also read `pop > 0 && pop < 400`, which meant a recorded
+  population of **zero** escaped both: Sfenta, with 0 inhabitants, was presented as a workforce
+  opportunity. Fixed, and pinned by tests that run against the shipped data file.
 
 ## Tech stack
 
@@ -44,7 +55,9 @@ Interactive geospatial dashboard for demographic analysis in Lebanon (Admin Leve
 - Dependency Ratio:
   - `(Population 0-19 + Population 65+) / Population 20-64 * 100`
 - Classifier categories are rule-based: pre-calculated percentile thresholds over demographic share and growth patterns. No model is involved.
-- A minimum population threshold is used to reduce noisy inference in very small districts.
+- A minimum population threshold (400) marks a locality as too small to read as a demographic
+  profile. Below it the classifier returns the neutral label, the panel says the analysis is not
+  available, the map paints it grey and the metrics show `N/A`. Zero counts as below.
 - The map can be switched between:
   - Total Population
   - Dependency Ratio

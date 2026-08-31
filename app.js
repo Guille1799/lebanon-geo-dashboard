@@ -116,8 +116,14 @@ function debounce(func, delay) {
 }
 // --- FIN DEBOUNCING ---
 
-// Función para seleccionar y aplicar zoom limitado a un distrito por nombre (para persistencia)
-function selectDistrictByName(districtName) {
+// Selecciona una localidad por su CODIGO, no por su nombre.
+//
+// Dos sitios distintos se llaman "Kafr": uno en Jbeil con 423 habitantes y otro en Akkar con 64.
+// Buscando por nombre, este bucle se quedaba con la ULTIMA coincidencia. Elegias el de Jbeil,
+// recargabas la pagina, y aparecia el de Akkar -- y como uno pasa el umbral y el otro no, el
+// analisis saltaba de disponible a "no disponible" sin nada que lo explicara.
+// ADM3_PCODE es unico en los 1.611 registros del fichero.
+function selectDistrictByPcode(pcode) {
     let layerToSelect = null;
     
     // 1. Iterar sobre las capas para encontrar el distrito
@@ -125,7 +131,7 @@ function selectDistrictByName(districtName) {
     if (!geojsonLayer) return; 
 
     geojsonLayer.eachLayer(layer => {
-        if (layer.feature.properties.ADM3_EN === districtName) {
+        if (LB.localityKey(layer.feature.properties) === String(pcode)) {
             layerToSelect = layer;
         }
     });
@@ -164,7 +170,7 @@ function selectDistrictByName(districtName) {
             const sortedFeatures = [...data.features].sort((a, b) => a.properties.ADM3_EN.localeCompare(b.properties.ADM3_EN));
             sortedFeatures.forEach(feature => {
                 const name = feature.properties.ADM3_EN;
-                if (name && name !== "Conflict" && feature.geometry) { 
+                if (LB.isRealLocality(feature.properties) && feature.geometry) { 
                     districtNameMap[name] = feature;
                 } else {
                     // console.warn("Excluding feature due to missing name or geometry:", feature.properties);
@@ -179,10 +185,9 @@ function selectDistrictByName(districtName) {
                  initializeMapThemeButtons();
                  
                  // --- LÓGICA DE RESTAURACIÓN DE ESTADO (MODIFICADA) ---
-                 const savedDistrict = localStorage.getItem('selectedDistrictName');
-                 if (savedDistrict) {
-                     // Llama a la nueva función que aplica el zoom limitado
-                     selectDistrictByName(savedDistrict);
+                 const savedPcode = localStorage.getItem('selectedDistrictPcode');
+                 if (savedPcode) {
+                     selectDistrictByPcode(savedPcode);
                  }
                  // ----------------------------------------------------
             } else { console.error("Map object not initialized before drawing."); }
@@ -238,7 +243,7 @@ const mapThemes = {
         geojsonLayer = L.geoJSON(geojsonData, {
             style: getBaseStyle, 
             onEachFeature: onEachFeature,
-            filter: (feature) => feature.geometry && feature.properties.ADM3_EN !== "Conflict" 
+            filter: (feature) => feature.geometry && LB.isRealLocality(feature.properties) 
         }).addTo(map);
     }
 
@@ -346,7 +351,7 @@ const mapThemes = {
                 selectedDistrictProps = e.target.feature.properties; 
                 updateDashboard();
                 searchInput.value = e.target.feature.properties.ADM3_EN;
-                localStorage.setItem('selectedDistrictName', e.target.feature.properties.ADM3_EN);
+                localStorage.setItem('selectedDistrictPcode', LB.localityKey(e.target.feature.properties));
                 resultsContainer.style.display = 'none'; 
                 searchClearBtn.style.display = 'block'; 
             }
@@ -359,7 +364,7 @@ const mapThemes = {
     function calculateTotalSummary(features) {
         lebanonTotalData = { ADM3_EN: "Total Lebanon", ADM1_EN: "Republic of Lebanon", ADM2_EN: "All Governorates", ai_insight: "National data indicates a demographic transition, requiring strategic planning for pension system reforms, healthcare capacity for an aging population, and simultaneous investment in youth employment initiatives." };
         features.forEach(feature => {
-            if (!feature.properties || feature.properties.ADM3_EN === "Conflict") return; 
+            if (!LB.isRealLocality(feature.properties)) return; 
             for (const key in feature.properties) {
                 const value = feature.properties[key];
                 if (typeof value === 'number') { lebanonTotalData[key] = (lebanonTotalData[key] || 0) + value; }
@@ -416,7 +421,7 @@ function updateDashboard() {
         const totalPopCheck = props[`pop_${currentYear}_total`] || 0;
         
         // Si la población es baja (pero no cero), sobrescribe el insight
-        if (totalPopCheck > 0 && totalPopCheck < POPULATION_THRESHOLD) {
+        if (!LB.isReliable(totalPopCheck)) {
             insightText = `Analysis Not Available: The district's population (approx. ${totalPopCheck.toLocaleString()}) is below the ${POPULATION_THRESHOLD} threshold for a reliable, pre-calculated statistical analysis.`;
         }
     }
@@ -430,8 +435,6 @@ function updateDashboard() {
 
     // Cálculo de Tasa de Dependencia (Panel 3)
     let ratio = -1; 
-    // --- INICIO: CÁLCULO DE MÉTRICAS (BUG 4) ---
-    // --- INICIO: CÁLCULO DE MÉTRICAS (BUG 4) ---
     try {
         // console.log("Calculating metrics..."); // <-- Puedes quitar/comentar los chivatos si quieres
 
@@ -442,13 +445,18 @@ function updateDashboard() {
 
         metricTotalPopEl.innerText = totalPop.toLocaleString();
         // 2. Dependency Ratio
-        let ratio = -1;
-        if (working > 0) {
+        //
+        // Same threshold as everywhere else. The map paints these localities grey and its legend
+        // says "No Data", and this panel used to print "Dependency Ratio: 0.0%" in green for the
+        // same place at the same time -- 390 of them. Danha has one inhabitant and was shown as
+        // demographically healthy.
+        ratio = -1;
+        if (!LB.isReliable(totalPop)) {
+            depRatioEl.innerText = "N/A";
+        } else if (working > 0) {
             ratio = ((youth + elderly) / working) * 100;
-            // console.log("Updating Dep Ratio:", ratio); 
             depRatioEl.innerText = `${ratio.toFixed(1)}%`;
         } else {
-            // console.log("Updating Dep Ratio: N/A"); 
             depRatioEl.innerText = "N/A";
         }
         depRatioEl.style.color = getDependencyRatioColor(ratio);
@@ -570,27 +578,21 @@ function updateTimeSeriesChart(props) {
 
 /* === DENTRO DE APP.JS === */
 
-    // --- Trend classification: KNOWN LIMITATION, documented on purpose ---
+    // --- Trend classification ---
     //
-    // This returns the pre-computed `ai_trend_tag` as-is. It does NOT re-check the population
-    // threshold, and that asymmetry is easy to misread:
+    // This used to carry a KNOWN LIMITATION note: the threshold gated the narrative text and the
+    // model prompt, but not the tag returned here, so 291 localities (18% of the file) were
+    // highlighted by the filter while their own panel refused to analyse them. The note said the
+    // honest version of this dashboard is the one that says where its classification stops being
+    // reliable. It now does something better than say it.
     //
-    //   * the threshold DOES gate the generated narrative text and the prompt
-    //   * the threshold does NOT gate the tag returned here
-    //
-    // Consequence on the current dataset: a number of localities below POPULATION_THRESHOLD
-    // still carry a substantive tag, including some with a recorded population of zero. Those
-    // tags should not be read as statistically supported.
-    //
-    // Documented rather than hidden by loosening the rule: the useful version of this dashboard
-    // is the one that says where its own classification stops being reliable.
+    // The threshold lives in reliability.js and every path asks the same predicate. A locality
+    // below it gets the neutral label here, so the filter stops offering it as an archetype.
     function classifyTrend(props) {
         if (!props) return aiTrendLabels.MIXED;
-        // Reads the pre-computed label; see the limitation note above before interpreting it.
+        if (!LB.isReliable(props[`pop_${currentYear}_total`])) return aiTrendLabels.MIXED;
         return props.ai_trend_tag || aiTrendLabels.MIXED;
-}
-
-/* === FIN DE LA ACTUALIZACIÓN === */
+    }
 
 
     // --- 6. EVENT HANDLERS (FILTROS) ---
@@ -600,7 +602,7 @@ function updateTimeSeriesChart(props) {
         resultsContainer.innerHTML = '';
         if (query.length === 0 && !showAllOnEmpty) { resultsContainer.style.display = 'none'; return; }
         let filteredNames = (query.length === 0 && showAllOnEmpty) ? sortedDistrictNames : sortedDistrictNames.filter(name => name.toLowerCase().startsWith(query.toLowerCase()));
-        filteredNames.slice(0, 100).forEach(name => { const item = document.createElement('div'); item.className = 'autocomplete-item'; const regex = new RegExp(`^(${query})`, 'gi'); item.innerHTML = name.replace(regex, '<strong>$1</strong>'); item.addEventListener('click', () => { selectDistrictByName(name); searchInput.value = name; resultsContainer.style.display = 'none'; searchClearBtn.style.display = 'block'; }); resultsContainer.appendChild(item); });
+        filteredNames.slice(0, 100).forEach(name => { const item = document.createElement('div'); item.className = 'autocomplete-item'; const regex = new RegExp(`^(${LB.escapeForRegex(query)})`, 'gi'); item.innerHTML = name.replace(regex, '<strong>$1</strong>'); item.addEventListener('click', () => { const f = districtNameMap[name]; if (f) selectDistrictByPcode(LB.localityKey(f.properties)); searchInput.value = name; resultsContainer.style.display = 'none'; searchClearBtn.style.display = 'block'; }); resultsContainer.appendChild(item); });
         resultsContainer.style.display = filteredNames.length > 0 ? 'block' : 'none';
     }
 
@@ -808,7 +810,7 @@ function initializeMapThemeButtons() {
         clearAIFilter(); 
         if (selectedLayer) { geojsonLayer.resetStyle(selectedLayer); selectedLayer = null; }
         selectedDistrictProps = null; 
-        localStorage.removeItem('selectedDistrictName');
+        localStorage.removeItem('selectedDistrictPcode');
         updateDashboard(); // Muestra total y recalcula/recolorea ratio
         map.setView([33.8547, 35.8623], 9); 
         searchInput.value = "";
@@ -968,7 +970,7 @@ aiChatSubmitBtn.addEventListener('click', async () => {
             referencePopForMessage = totalPop; // Guarda la población de 2015
         }
         // Si la población es baja (pero no cero) en cualquier año, activa la bandera
-        if (totalPop > 0 && totalPop < POPULATION_THRESHOLD) {
+        if (!LB.isReliable(totalPop)) {
             isLowPopulation = true;
             break; // Deja de buscar
         }

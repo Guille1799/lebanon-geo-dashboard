@@ -1,0 +1,34 @@
+# Este repositorio no tenia CI, y los bugs que la estrenan lo explican solos:
+# un filtro resaltaba 291 localidades cuyo propio panel decia que no se podian
+# analizar, y un parentesis escrito en el buscador lo dejaba mudo. Nada lo veia
+# porque no habia nada mirando.
+#
+# Sin dependencias: los tests son node puro y corren contra el fichero de datos
+# que se publica, no contra ejemplos inventados.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Un fichero que no parsea no llega a fallar un test: falla antes, en el
+      # navegador de quien abra la pagina.
+      - name: Comprobar sintaxis
+        run: |
+          node --check reliability.js
+          node --check app.js
+          node --check netlify/functions/ask-gemini.js
+
+      - name: Tests
+        run: node tests/run.js

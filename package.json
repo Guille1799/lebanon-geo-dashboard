@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "npx netlify dev",
-    "serve": "npx netlify dev --offline"
+    "serve": "npx netlify dev --offline",
+    "test": "node tests/run.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.15.0"
