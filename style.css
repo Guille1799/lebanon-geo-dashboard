@@ -1153,3 +1153,34 @@ hr.header-separator {
 }
 
 
+
+/* --- Foco visible ---
+ *
+ * El fichero no tenia ni una regla :focus. Con teclado se navegaba a ciegas:
+ * el foco existia y no se veia por ninguna parte. :focus-visible solo lo pinta
+ * cuando la navegacion es de teclado, asi que el raton sigue igual que antes. */
+:focus-visible {
+    outline: 3px solid #6a1b9a;
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+.autocomplete-item:focus-visible,
+.autocomplete-item:hover {
+    background: #f3e5f5;
+    outline-offset: -3px;
+}
+
+/* Quien navegue con teclado necesita poder saltarse la lista de 1.545 nombres. */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    background: #6a1b9a;
+    color: #fff;
+    padding: 0.6rem 1rem;
+    z-index: 10000;
+}
+.skip-link:focus {
+    left: 0;
+}

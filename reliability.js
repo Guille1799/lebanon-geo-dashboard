@@ -80,7 +80,41 @@
         return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
+    /* The national headline, computed from the national figures.
+     *
+     * It used to be a sentence typed into app.js and shown under a panel titled
+     * "AI Policy Insight" -- the first text any visitor read, presented exactly
+     * like the per-locality ones, which really are generated. Nothing in the
+     * dashboard could have contradicted it, because nothing produced it.
+     *
+     * Now it says what the file says. Rule-based and dull on purpose: a headline
+     * that cannot be wrong about the data is worth more than one that reads well. */
+    function nationalHeadline(f) {
+        var total = Number(f.youthNow) + Number(f.workingNow) + Number(f.elderlyNow);
+        if (!(total > 0)) return 'No national totals available for this year.';
+        var pct = function (n) { return Math.round((Number(n) / total) * 1000) / 10; };
+        var change = function (a, b) {
+            a = Number(a); b = Number(b);
+            if (!(a > 0)) return null;
+            return Math.round(((b - a) / a) * 1000) / 10;
+        };
+        var elderly = change(f.elderlyStart, f.elderlyEnd);
+        var youth = change(f.youthStart, f.youthEnd);
+        var parts = [
+            'In ' + f.year + ', ' + pct(f.youthNow) + '% of the recorded population is under 20, ' +
+            pct(f.workingNow) + '% is of working age and ' + pct(f.elderlyNow) + '% is 65 or over.'
+        ];
+        if (elderly !== null && youth !== null) {
+            parts.push('Between ' + f.spanStart + ' and ' + f.spanEnd + ' the projection moves the 65+ group by ' +
+                (elderly >= 0 ? '+' : '') + elderly + '% and the under-20 group by ' +
+                (youth >= 0 ? '+' : '') + youth + '%.');
+        }
+        parts.push('These are the totals recorded in the file, not a forecast of policy.');
+        return parts.join(' ');
+    }
+
     return {
+        nationalHeadline: nationalHeadline,
         POPULATION_THRESHOLD: POPULATION_THRESHOLD,
         NON_LOCALITY_NAMES: NON_LOCALITY_NAMES,
         isRealLocality: isRealLocality,

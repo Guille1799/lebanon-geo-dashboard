@@ -7,7 +7,7 @@
     
     <link rel="icon" href="data:,"> 
     
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="style.css?v=1.6"> </head>
 <body>
 
@@ -95,7 +95,7 @@
                                         <strong>What is 'AI Policy Insight'?</strong>
                                         <p><strong>Details:</strong> An automated analysis that highlights the <strong>primary demographic challenge or opportunity</strong> for the selected district.</p>
                                         <hr>
-                                        <p><strong>How it Works:</strong> This insight is <strong>not generated live</strong>. Key metrics for each district were fed to a Generative AI, and the analysis was stored in the GeoJSON file.</p>
+                                        <p><strong>How it Works:</strong> For a locality, this text was written by a language model from its key metrics and stored in the GeoJSON file; it is not generated live. For the national view it is computed from the national totals each time you change the year.</p>
                                    </div>
                                 </div>
                             </h4>
@@ -150,7 +150,7 @@
                                 <span class="button-text">Ask AI</span>
                                 <span class="button-spinner" style="display: none;"></span>
                             </button>
-                            <div id="ai-chat-response"></div>
+                            <div id="ai-chat-response" aria-live="polite" role="status"></div>
                         </div>
 
                         <div id="ai-filter-box">
@@ -164,7 +164,7 @@
                                     </svg>
                                    <div class="tooltip-text">
                                     <strong>What is 'AI Trend Classification'?</strong>
-                                    <p><strong>Details:</strong> These tags (e.g., "Aging", "Youth Bulge") are pre-calculated based on a statistical model of a district's demographic <strong>share</strong> and <strong>growth rate</strong>.</p>
+                                    <p><strong>Details:</strong> These tags (e.g., "Aging", "Youth Bulge") come from percentile rules over a locality&rsquo;s demographic <strong>share</strong> and <strong>growth rate</strong>, calculated outside this dashboard. No language model is involved. Localities below the reliability threshold are not tagged.</p>
                                     <hr>
                                     <p><strong>In short:</strong> This filter instantly highlights all districts on the map that share the same significant demographic profile.</p>
                                    </div>
@@ -260,11 +260,11 @@
 
         <div id="map"></div>
     
-</div> <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</div> <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.7/Sortable.min.js" integrity="sha384-DgmC6Xe2bSN2WjTDXzWYbUbxyhNP+NNkGDR/g78pCXV7E7rcVTGxVg0uIVCUUcBc" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script src="reliability.js?v=1.2"></script>
     <script src="app.js?v=1.2"></script> 

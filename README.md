@@ -15,7 +15,10 @@ Interactive geospatial dashboard for demographic analysis in Lebanon (Admin Leve
 - Shows population pyramid and time-series evolution by age groups.
 - Computes and displays dependency ratio to support policy interpretation.
 - Includes AI-assisted analysis:
-  - **Pre-computed rule-based summary** per district (stored in data).
+  - **Per-locality summary written by a language model** and stored in the GeoJSON, not generated
+    live. The national headline is different: it is computed from the national totals every time
+    the year changes. Two different origins, said out loud, because they used to be shown in the
+    same panel with the same label.
   - **Live Q&A assistant** constrained to dashboard data only.
   - **Rule-based demographic classifier** (percentile thresholds) to highlight districts with similar profiles.
 
@@ -54,7 +57,10 @@ Interactive geospatial dashboard for demographic analysis in Lebanon (Admin Leve
 
 - Dependency Ratio:
   - `(Population 0-19 + Population 65+) / Population 20-64 * 100`
-- Classifier categories are rule-based: pre-calculated percentile thresholds over demographic share and growth patterns. No model is involved.
+- Classifier categories are percentile rules over demographic share and growth, computed **outside
+  this repository** in an ETL that is not published here. That is worth stating plainly: the exact
+  cut-offs the tooltips describe cannot be checked against any code in this repo. No language model
+  produces the tags.
 - A minimum population threshold (400) marks a locality as too small to read as a demographic
   profile. Below it the classifier returns the neutral label, the panel says the analysis is not
   available, the map paints it grey and the metrics show `N/A`. Zero counts as below.
@@ -64,7 +70,24 @@ Interactive geospatial dashboard for demographic analysis in Lebanon (Admin Leve
 
 ## Responsible AI and defensive prompting
 
-The live assistant uses prompt-level defenses to keep answers grounded in the dashboard data. These run client-side, so they are a usability guardrail rather than a security boundary — server-side hardening is the next step:
+The live assistant is grounded by a prompt that lives on the server, in the Netlify function that
+holds the API key.
+
+That sentence used to read: *these run client-side, so they are a usability guardrail rather than a
+security boundary — server-side hardening is the next step*. It was accurate and it understated the
+problem. The browser built the whole prompt — role, rules, data, question — and the function
+forwarded whatever arrived. So the rules were not weak: an attacker did not have to break them, only
+to not send them, and anyone with the URL had a free language model billed to me.
+
+The endpoint now owns the task. It takes a locality, its figures and a question, refuses a
+ready-made prompt by name, caps every field, checks the request came from this site, and decides the
+low-population cut-off itself rather than believing a flag from the caller.
+
+What it still does not do, said plainly: someone can post invented figures and get two or three
+sentences about a population table. That is not prevented. The point is that it stops being worth
+doing.
+
+The rules themselves:
 
 - Restricts answers to metrics available in the dashboard data.
 - Refuses requests outside the demographic scope.
@@ -138,3 +161,24 @@ each source before redistributing `lebanon_data_tagged.geojson`.
 
 Guillermo Martin de Oliva Carranza  
 LinkedIn: [guillermo-martin-de-oliva](https://www.linkedin.com/in/guillermo-martin-de-oliva/)
+
+## Data file
+
+`lebanon_data_tagged.geojson` is the OCHA/HDX administrative layer for Lebanon with the demographic
+columns joined onto it. Two notes on what has been done to it:
+
+- **Coordinates are rounded to six decimals** (about 11 cm). They arrived with fourteen, which is
+  nanometre precision on an administrative border, and cost 8 MB for nothing. The file went from
+  21.0 MB to 12.8 MB; the properties are byte-for-byte unchanged.
+- **The ETL that produced the demographic columns and the trend tags is not in this repository.**
+  That means the percentile cut-offs the tooltips describe cannot be verified against any code here.
+
+## Tests
+
+```bash
+node tests/run.js     # or: npm test
+```
+
+26 checks, no dependencies. Half of them run against the shipped GeoJSON rather than invented rows:
+a predicate that passes on three hand-made objects and fails on the file it ships with has not been
+tested. CI runs them plus a syntax check on the three JavaScript files.
