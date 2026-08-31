@@ -203,7 +203,11 @@ exports.handler = async (event) => {
         if (motivoSinSdk) {
             return createErrorResponse(500, "The analysis library is missing from this deploy.");
         }
-        return createErrorResponse(502, "The analysis service did not answer. Try again in a moment.");
+        // El motivo, en corto y sin filtrar nada. "No contesto" a secas no distingue una
+        // cuota agotada de una clave revocada de un modelo retirado, y las tres se arreglan
+        // de forma distinta. Ni la clave ni el prompt salen de aqui.
+        const pista = (error && (error.status || error.name)) || "unknown";
+        return createErrorResponse(502, "The analysis service did not answer (" + pista + ").");
     }
 };
 
