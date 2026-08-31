@@ -214,7 +214,13 @@ exports.handler = async (event) => {
                 const text = (await result.response).text();
                 return { statusCode: 200, body: JSON.stringify({ message: text, model: nombre }) };
             } catch (err) {
-                fallos.push(nombre + ": " + ((err && (err.status || err.name)) || "unknown"));
+                // El codigo solo no basta: los tres modelos daban 400 y eso ya no dice cual
+                // de los dos fallos es. Se anota tambien el motivo, recortado, que es lo que
+                // distingue "ese modelo no existe" de "la clave no vale". La clave nunca sale
+                // de aqui: Google devuelve el motivo, no el secreto.
+                const codigo = (err && (err.status || err.name)) || "unknown";
+                const motivo = String((err && err.message) || "").replace(/\s+/g, " ").slice(0, 90);
+                fallos.push(nombre + ": " + codigo + (motivo ? " — " + motivo : ""));
             }
         }
         console.error("No model answered:", fallos.join(" | "));
