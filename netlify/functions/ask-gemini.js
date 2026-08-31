@@ -44,6 +44,16 @@ try {
     motivoSinSdk = e.message;
 }
 
+/* Un fallo pasajero merece reintentarse; uno permanente, no.
+ *
+ * 503 y 429 son "ahora mismo no puedo": el modelo existe y vuelve en segundos.
+ * 404 y 400 son "ese modelo no existe para esta clave": reintentar es perder
+ * tiempo y latencia. Tratarlos igual hacia que el panel fallara de vez en cuando
+ * sin motivo real. */
+function esPasajero(codigo) {
+    return codigo === 503 || codigo === 429 || codigo === 500;
+}
+
 /* Modelos a probar, en orden.
  *
  * El fichero pedia "gemini-flash-latest" desde abril y Google contesta 400 a ese
@@ -207,33 +217,40 @@ exports.handler = async (event) => {
         const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
         const prompt = buildPrompt(fields);
         const fallos = [];
+
+        // No todos los fallos son el mismo fallo.
+        //
+        // 503 y 429 son "ahora mismo no puedo": el modelo existe y vuelve en unos segundos.
+        // 404 y 400 son "ese modelo no existe para esta clave": reintentarlo es perder tiempo.
+        // Tratarlos igual hacia que el panel fallara de vez en cuando sin motivo: un 503 pasajero
+        // en el primer modelo tiraba la peticion entera hasta el final de la lista.
+        const espera = (ms) => new Promise((r) => setTimeout(r, ms));
+
         for (const nombre of MODELOS) {
-            try {
-                const model = genAI.getGenerativeModel({ model: nombre });
-                const result = await model.generateContent(prompt);
-                const text = (await result.response).text();
-                return { statusCode: 200, body: JSON.stringify({ message: text, model: nombre }) };
-            } catch (err) {
-                // El codigo solo no basta: los tres modelos daban 400 y eso ya no dice cual
-                // de los dos fallos es. Se anota tambien el motivo, recortado, que es lo que
-                // distingue "ese modelo no existe" de "la clave no vale". La clave nunca sale
-                // de aqui: Google devuelve el motivo, no el secreto.
-                const codigo = (err && (err.status || err.name)) || "unknown";
-                // Google envuelve la causa en un JSON de error con varios objetos anidados. Lo
-                // que un humano necesita es la ultima "message" de esa cadena: ahi esta la frase
-                // util ("API key not valid", "quota exceeded", "model not found"). El resto es
-                // ruido de protocolo, y volcarlo entero en la pagina no ayuda a nadie.
-                const crudo = String((err && err.message) || "").replace(/\s+/g, " ");
-                const trozos = crudo.match(/"message"\s*:\s*"([^"]{4,200})"/g) || [];
-                let motivo = "";
-                if (trozos.length) {
-                    const ultimo = trozos[trozos.length - 1];
-                    const m = ultimo.match(/"([^"]{4,200})"\s*$/);
-                    motivo = m ? m[1] : "";
+            const model = genAI.getGenerativeModel({ model: nombre });
+            let ultimo = null;
+            for (let intento = 1; intento <= 3; intento++) {
+                try {
+                    const result = await model.generateContent(prompt);
+                    const text = (await result.response).text();
+                    return { statusCode: 200, body: JSON.stringify({ message: text, model: nombre, intentos: intento }) };
+                } catch (err) {
+                    const codigo = (err && (err.status || err.name)) || "unknown";
+                    ultimo = { codigo: codigo, err: err };
+                    if (!esPasajero(codigo) || intento === 3) break;
+                    await espera(intento * 700);
                 }
-                if (!motivo) motivo = crudo.slice(0, 120);
-                fallos.push(nombre + ": " + codigo + (motivo ? " — " + motivo : ""));
             }
+            const crudo = String((ultimo && ultimo.err && ultimo.err.message) || "").replace(/\s+/g, " ");
+            const trozos = crudo.match(/"message"\s*:\s*"([^"]{4,200})"/g) || [];
+            let motivo = "";
+            if (trozos.length) {
+                const u = trozos[trozos.length - 1];
+                const m = u.match(/"([^"]{4,200})"\s*$/);
+                motivo = m ? m[1] : "";
+            }
+            if (!motivo) motivo = crudo.slice(0, 120);
+            fallos.push(nombre + ": " + (ultimo ? ultimo.codigo : "unknown") + (motivo ? " — " + motivo : ""));
         }
         console.error("No model answered:", fallos.join(" | "));
         return createErrorResponse(502, "No analysis model answered (" + fallos.join("; ") + ").");
@@ -253,4 +270,4 @@ exports.handler = async (event) => {
 };
 
 /* Exported for tests. The handler needs Netlify's environment; these do not. */
-module.exports._internals = { buildPrompt, cameFromThisSite, readString, LIMITS, POPULATION_THRESHOLD, MODELOS };
+module.exports._internals = { buildPrompt, cameFromThisSite, readString, LIMITS, POPULATION_THRESHOLD, MODELOS, esPasajero };

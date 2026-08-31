@@ -289,6 +289,16 @@ check('hay mas de un modelo, y el que ya no existe no esta', () => {
     ok(G.MODELOS.length >= 2, 'con un solo modelo no hay reserva');
     eq(G.MODELOS.indexOf('gemini-flash-latest'), -1, 'el modelo que devuelve 400 sigue en la lista');
 });
+check('un 503 se reintenta y un 404 no', () => {
+    // El panel fallaba de vez en cuando sin motivo: un 503 pasajero en el primer
+    // modelo tiraba la peticion entera. Visto en produccion, dos intentos seguidos:
+    // el primero 503, el segundo 200 con la misma pregunta.
+    ok(G.esPasajero(503), '503 es "ocupado", hay que reintentar');
+    ok(G.esPasajero(429), '429 es limite de ritmo, hay que reintentar');
+    eq(G.esPasajero(404), false, '404 es "no existe": reintentarlo es perder tiempo');
+    eq(G.esPasajero(400), false, '400 es peticion mala: reintentarlo no la arregla');
+    eq(G.esPasajero('unknown'), false, 'sin codigo, no se reintenta a ciegas');
+});
 /* ---------- informe ---------- */
 
 Promise.all(pending).then(() => {
