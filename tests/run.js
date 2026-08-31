@@ -281,6 +281,14 @@ check('el SDK se importa en el nivel superior, no dentro del handler', () => {
     ok(h !== -1, 'tiene que haber un exports.handler');
     ok(i < h, 'el require del SDK esta DESPUES de exports.handler, o sea dentro: linea ' + (i + 1));
 });
+check('hay mas de un modelo, y el que ya no existe no esta', () => {
+    // El fichero pedia gemini-flash-latest desde abril y Google responde 400 a ese
+    // nombre: el chat llevaba meses muerto detras de un "ha ocurrido un error".
+    // Un solo nombre fijo vuelve a matarlo el dia que retiren el siguiente.
+    ok(Array.isArray(G.MODELOS), 'MODELOS tiene que ser una lista');
+    ok(G.MODELOS.length >= 2, 'con un solo modelo no hay reserva');
+    eq(G.MODELOS.indexOf('gemini-flash-latest'), -1, 'el modelo que devuelve 400 sigue en la lista');
+});
 /* ---------- informe ---------- */
 
 Promise.all(pending).then(() => {

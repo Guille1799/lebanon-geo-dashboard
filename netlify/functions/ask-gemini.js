@@ -44,6 +44,19 @@ try {
     motivoSinSdk = e.message;
 }
 
+/* Modelos a probar, en orden.
+ *
+ * El fichero pedia "gemini-flash-latest" desde abril y Google contesta 400 a ese
+ * nombre. O sea que el chat de este panel llevaba meses muerto, devolviendo "ha
+ * ocurrido un error" sin decir cual: el mensaje generico oculto durante meses un
+ * fallo de una linea.
+ *
+ * Una lista y no un nombre, porque Google jubila modelos y un nombre fijo vuelve a
+ * dejar esto muerto el dia que retiren el siguiente. Se prueba en orden y se usa el
+ * primero que conteste; si no contesta ninguno, el error dice cuales se probaron en
+ * vez de "reintenta". */
+const MODELOS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+
 /* Same number as reliability.js on the client. Duplicated on purpose: this side
  * must not trust a threshold that arrives over the wire. The client used to
  * compute `isLowPopulation` and the prompt believed it, so posting `false` got
@@ -192,10 +205,20 @@ exports.handler = async (event) => {
 
     try {
         const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-        const result = await model.generateContent(buildPrompt(fields));
-        const text = (await result.response).text();
-        return { statusCode: 200, body: JSON.stringify({ message: text }) };
+        const prompt = buildPrompt(fields);
+        const fallos = [];
+        for (const nombre of MODELOS) {
+            try {
+                const model = genAI.getGenerativeModel({ model: nombre });
+                const result = await model.generateContent(prompt);
+                const text = (await result.response).text();
+                return { statusCode: 200, body: JSON.stringify({ message: text, model: nombre }) };
+            } catch (err) {
+                fallos.push(nombre + ": " + ((err && (err.status || err.name)) || "unknown"));
+            }
+        }
+        console.error("No model answered:", fallos.join(" | "));
+        return createErrorResponse(502, "No analysis model answered (" + fallos.join("; ") + ").");
     } catch (error) {
         console.error("Gemini call failed:", error.message);
         // Distinguir "el modelo no contesto" de "el paquete no llego" importa: son fallos
@@ -212,4 +235,4 @@ exports.handler = async (event) => {
 };
 
 /* Exported for tests. The handler needs Netlify's environment; these do not. */
-module.exports._internals = { buildPrompt, cameFromThisSite, readString, LIMITS, POPULATION_THRESHOLD };
+module.exports._internals = { buildPrompt, cameFromThisSite, readString, LIMITS, POPULATION_THRESHOLD, MODELOS };
