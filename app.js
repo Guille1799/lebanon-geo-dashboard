@@ -1007,6 +1007,18 @@ suggestedQuestionsWrapper.addEventListener('click', (e) => {
 
 
 // REEMPLAZA LA FUNCIÓN ENTERA CON ESTO (DESDE LA LÍNEA ~811 HASTA LA ~895)
+// Enter envia, Mayus+Enter hace un salto de linea.
+//
+// Es un <textarea>, asi que Enter escribia una linea nueva y la pregunta se
+// quedaba ahi. Nadie escribe varios parrafos para preguntarle algo a un panel:
+// el gesto que espera cualquiera es escribir y pulsar Enter.
+aiChatInput.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || e.shiftKey) return;
+    e.preventDefault();
+    if (aiChatSubmitBtn.disabled) return;
+    aiChatSubmitBtn.click();
+});
+
 aiChatSubmitBtn.addEventListener('click', async () => {
     const userQuestion = aiChatInput.value;
     const props = selectedDistrictProps || lebanonTotalData; // Modo dual (Distrito o Nacional)
