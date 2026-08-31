@@ -182,3 +182,40 @@ node tests/run.js     # or: npm test
 26 checks, no dependencies. Half of them run against the shipped GeoJSON rather than invented rows:
 a predicate that passes on three hand-made objects and fails on the file it ships with has not been
 tested. CI runs them plus a syntax check on the three JavaScript files.
+
+## Two deployments, on purpose
+
+This repository is deployed twice, to two Netlify projects on two accounts:
+
+| URL | Role |
+|---|---|
+| `onulibanodashboard.netlify.app` | **the published one** — this is the link in the CV, on LinkedIn and at the top of this README |
+| `spiffy-cat-99fb35.netlify.app` | the spare |
+
+**Why.** Netlify's free build credits run out. When they did, the second project was created so the
+dashboard would not simply go dark. If the published one runs out, the link moves to the spare.
+
+🔴 **The rule that makes this safe, and the one we learned the hard way:**
+
+> **An environment variable set in one project does NOT exist in the other.**
+
+Both projects deploy the same commit, so they serve byte-identical HTML with the same etag. They look
+like one site from outside. But `GEMINI_API_KEY` lives per project, so a key renewed in one leaves
+the other answering *"An error occurred"* — and nothing goes red, because the pages are identical.
+
+That is exactly what happened on 2026-08-31: the key was renewed on the spare, the published one kept
+failing, and the two looked the same from every angle except the one that mattered.
+
+**So: any environment variable goes into BOTH projects.** The way to tell them apart from outside is
+the `Netlify-Hosting` response header, which carries a different project id for each.
+
+**How to check the published one is alive**, in a browser console on the site:
+
+```js
+const r = await fetch('/.netlify/functions/ask-gemini', {
+  method: 'POST', headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({ locality: 'Total Lebanon', population: 5685372,
+    dataTable: 'test', growth: 'test', question: 'Is the population ageing?' })
+});
+console.log(r.status, await r.json());   // 200 y una respuesta = vivo
+```
