@@ -25,6 +25,25 @@
  * about a demographic table is not.
  */
 
+/* El require va ARRIBA, no dentro del handler.
+ *
+ * Lo puse dentro para que los tests pudieran cargar este modulo sin instalar el
+ * SDK. En produccion eso rompio la funcion: el empaquetador de Netlify busca los
+ * require de forma estatica para decidir que mete en el paquete, y uno escondido
+ * en el cuerpo de una funcion se le escapa. El modulo no viajaba, el require
+ * lanzaba, mi propio catch lo convertia en un 502 educado, y el chat decia
+ * "ha ocurrido un error" sin mas.
+ *
+ * Arriba y envuelto: el empaquetador lo ve, y los tests siguen pudiendo cargar el
+ * fichero sin el paquete. */
+let GoogleGenerativeAI = null;
+let motivoSinSdk = null;
+try {
+    ({ GoogleGenerativeAI } = require("@google/generative-ai"));
+} catch (e) {
+    motivoSinSdk = e.message;
+}
+
 /* Same number as reliability.js on the client. Duplicated on purpose: this side
  * must not trust a threshold that arrives over the wire. The client used to
  * compute `isLowPopulation` and the prompt believed it, so posting `false` got
@@ -172,10 +191,6 @@ exports.handler = async (event) => {
     }
 
     try {
-        // Cargado aqui y no arriba: asi el modulo se puede importar sin el SDK, que es lo que
-        // permite que los tests ejerciten la validacion y el molde del prompt sin instalar nada
-        // ni salir a la red. Y el SDK solo se carga cuando de verdad se va a llamar al modelo.
-        const { GoogleGenerativeAI } = require("@google/generative-ai");
         const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
         const result = await model.generateContent(buildPrompt(fields));
@@ -183,6 +198,11 @@ exports.handler = async (event) => {
         return { statusCode: 200, body: JSON.stringify({ message: text }) };
     } catch (error) {
         console.error("Gemini call failed:", error.message);
+        // Distinguir "el modelo no contesto" de "el paquete no llego" importa: son fallos
+        // distintos y el segundo no se arregla reintentando.
+        if (motivoSinSdk) {
+            return createErrorResponse(500, "The analysis library is missing from this deploy.");
+        }
         return createErrorResponse(502, "The analysis service did not answer. Try again in a moment.");
     }
 };

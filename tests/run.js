@@ -263,6 +263,24 @@ check('el desplegable de busqueda es alcanzable con teclado', () => {
     });
 });
 
+check('el SDK se importa en el nivel superior, no dentro del handler', () => {
+    // Netlify decide que mete en el paquete de la funcion buscando los require de
+    // forma estatica. Uno escondido en el cuerpo de una funcion se le escapa: el
+    // paquete viaja sin el SDK, el require lanza en produccion, el catch lo
+    // convierte en un 502 educado y el chat dice "ha ocurrido un error".
+    //
+    // Pasaba en produccion y en ningun otro sitio. Los tests seguian verdes.
+    const src = fs.readFileSync(path.join(ROOT, 'netlify', 'functions', 'ask-gemini.js'), 'utf8');
+    const lineas = src.split(String.fromCharCode(10));
+    const i = lineas.findIndex((l) => l.indexOf('require(' + JSON.stringify('@google/generative-ai') + ')') !== -1);
+    ok(i !== -1, 'el require del SDK tiene que estar en el fichero');
+    // La regla no es "sin sangrar": un require dentro de un try de nivel superior va
+    // sangrado y el empaquetador lo ve igual. La regla es que este ANTES del handler.
+    // Dentro del handler es donde se escapa.
+    const h = lineas.findIndex((l) => l.indexOf('exports.handler') !== -1);
+    ok(h !== -1, 'tiene que haber un exports.handler');
+    ok(i < h, 'el require del SDK esta DESPUES de exports.handler, o sea dentro: linea ' + (i + 1));
+});
 /* ---------- informe ---------- */
 
 Promise.all(pending).then(() => {
