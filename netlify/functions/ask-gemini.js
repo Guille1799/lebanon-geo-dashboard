@@ -219,11 +219,19 @@ exports.handler = async (event) => {
                 // distingue "ese modelo no existe" de "la clave no vale". La clave nunca sale
                 // de aqui: Google devuelve el motivo, no el secreto.
                 const codigo = (err && (err.status || err.name)) || "unknown";
-                // La COLA, no la cabeza: el SDK envuelve la causa real al final del mensaje,
-                // detras de su propio prefijo y de la URL. Recortando por delante se leia
-                // "Error fetching from https://..." tres veces y el motivo se perdia.
+                // Google envuelve la causa en un JSON de error con varios objetos anidados. Lo
+                // que un humano necesita es la ultima "message" de esa cadena: ahi esta la frase
+                // util ("API key not valid", "quota exceeded", "model not found"). El resto es
+                // ruido de protocolo, y volcarlo entero en la pagina no ayuda a nadie.
                 const crudo = String((err && err.message) || "").replace(/\s+/g, " ");
-                const motivo = crudo.length > 160 ? "..." + crudo.slice(-160) : crudo;
+                const trozos = crudo.match(/"message"\s*:\s*"([^"]{4,200})"/g) || [];
+                let motivo = "";
+                if (trozos.length) {
+                    const ultimo = trozos[trozos.length - 1];
+                    const m = ultimo.match(/"([^"]{4,200})"\s*$/);
+                    motivo = m ? m[1] : "";
+                }
+                if (!motivo) motivo = crudo.slice(0, 120);
                 fallos.push(nombre + ": " + codigo + (motivo ? " — " + motivo : ""));
             }
         }
