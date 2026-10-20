@@ -1,5 +1,20 @@
 # Lebanon Geo-Dashboard (UN ESCWA)
 
+**What it is:** An interactive map of Lebanon's population, locality by locality (1,545 places), by age and
+sex, from 2015 to 2030, made for a technical assignment for UN ESCWA.
+
+**How it works:** A web page draws the map from a geographic data file. You choose years and places to
+compare, and a small assistant answers questions about this data only.
+
+**Status:** finished (reviewed 2026-10-20). Live: [onulibanodashboard.netlify.app](https://onulibanodashboard.netlify.app/)
+
+**How to run:** `npm install`, add a Gemini key to `.env` (see `.env.example`), then `npm run dev`.
+
+**Notebook:** private, outside this repo.
+
+**What it demonstrates:** A clear map for a humanitarian question, who lives where, where the gaps in the data
+(disputed border areas) are left out and said so, not hidden.
+
 **Repository:** [github.com/Guille1799/lebanon-geo-dashboard](https://github.com/Guille1799/lebanon-geo-dashboard)  
 **Live demo:** [onulibanodashboard.netlify.app](https://onulibanodashboard.netlify.app/)
 
